@@ -1,0 +1,69 @@
+#!/bin/sh
+################################################################################
+################################################################################
+# start-ssh-agent
+#
+# Copyright (c) 2006-2016, James S. Crook
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# The views and conclusions contained in the software and documentation are those
+# of the authors and should not be interpreted as representing official policies,
+# either expressed or implied, of the FreeBSD Project.
+################################################################################
+################################################################################
+# This script checks to see if ssh-agent is already running. If it's not, it
+# prompts for a passphrase (you _should_ use one!) and then starts ssh-agent.
+# Irrespective of whether ssh-agent was just started or had already been
+# running, this script sets up the environment so that ssh-agent is useful.
+
+# Do not _execute_ this script, "dot it".
+#
+# James S. Crook	v0.0.1	2006/03/13 - initial version
+# James S. Crook	v1.0.0	2007/05/10 - added username output
+# James S. Crook	v1.0.1	2016/02/04 - added GPL3 license
+# James S. Crook	v1.0.2	2016/02/18 - changed to Free BSD license
+################################################################################
+
+MYUID=$(whoami)
+
+# For the times when we cannot trust $HOME...
+HOMEDIR=$(awk -F : "/^$MYUID:/ { print \$6; }" /etc/passwd)
+
+ENVFILE=$HOMEDIR/.ssh/ssh-agent.env
+
+SSHAGENTPIDS=$(ps -ef | awk -v myuid=$MYUID '
+    $1 == myuid && $3 == 1 && $NF ~ "ssh-agent$" { print $2; }
+')
+
+if [ "$SSHAGENTPIDS" == "" ]; then
+    echo "ssh-agent for $MYUID not running: starting"
+    ssh-agent | grep SSH_ > $ENVFILE
+    . $ENVFILE
+    echo "==================== ==================== ===================="
+    echo "PASSPHRASE PASSPHRASE PASSPHRASE PASSPHRASE PASSPHRASE"
+    echo "==================== ==================== ===================="
+    ssh-add
+    cat $ENVFILE
+else
+    . $ENVFILE
+fi

@@ -1,0 +1,126 @@
+#!/bin/sh
+################################################################################
+################################################################################
+# multx
+#
+# Copyright (c) 2016, James S. Crook
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# The views and conclusions contained in the software and documentation are those
+# of the authors and should not be interpreted as representing official policies,
+# either expressed or implied, of the FreeBSD Project.
+################################################################################
+################################################################################
+#
+# The multx script provides one way of executing the same command on multiple
+# UNIX/Linux systems very easily and quickly. It is most useful when used in
+# combination with ssh-agent and when public key authentication is configured
+# on the hostnames of interest.
+#
+# This script is a template. That is, it will almost certainly be more useful if
+# it's modified to suit your particular environment.
+################################################################################
+# James S. Crook	2016/03/07
+################################################################################
+VERSION=v0.0.5
+PROG=$(basename $0)
+
+######### Define hostname group(s) and options
+HOST_GROUP_1="fred wilma"
+HOST_GROUP_2="barney betty"
+HOST_GROUP_3="pebbles bamm-bamm"
+
+CONFIRMFLAG=0
+BACKGROUNDFLAG=0
+QUIETFLAG=0
+HOSTS=""
+
+OPTIONS="123abcf:h:qx:"
+while getopts "$OPTIONS" OPTION; do
+    case $OPTION in
+	1) HOSTS="$HOSTS $HOST_GROUP_1";;
+	2) HOSTS="$HOSTS $HOST_GROUP_2";;
+	3) HOSTS="$HOSTS $HOST_GROUP_3";;
+	a) HOSTS="$HOSTS $HOST_GROUP_1 $HOST_GROUP_2 $HOST_GROUP_3";;
+	b) BACKGROUNDFLAG=1;;
+	c) CONFIRMFLAG=1;;
+	f) if [ -r $OPTARG ]; then
+		HOSTS="$HOSTS $(cat $OPTARG)"
+	    else
+		echo "$PROG: cannot read file '$OPTARG'"
+	    fi;;
+	h) HOSTS="$HOSTS $OPTARG";;
+	q) QUIETFLAG=1;;
+	x) HOSTS=$(echo "$HOSTS" | awk -v optarg="$OPTARG" '{gsub(optarg, ""); print $0}');;
+    esac
+done
+shift $(($OPTIND - 1))
+
+CMD=$*
+
+if [ "$CMD" == "" ]; then
+    echo "usage: $PROG [option(s)] remote_command"
+    echo "   where options are: $OPTIONS"
+    echo "	-1		: hostnames: $HOST_GROUP_1"
+    echo "	-2		: hostnames: $HOST_GROUP_2"
+    echo "	-3		: hostnames: $HOST_GROUP_3"
+    echo "	-a		: hostnames: $HOST_GROUP_1 $HOST_GROUP_2 $HOST_GROUP_3"
+    echo "	-b		: background mode"
+    echo "	-c		: confirmation mode"
+    echo "	-h <host_list>	: add a hostname or 'hostname_1 ... hostname_n'"
+    echo "	-f <file>	: read a file containing hostname(s)"
+    echo "	-q		: quiet mode"
+    echo "	-x <ERE>	: eXclude all/part of hostname(s) containing this ERE (pattern)"
+    echo "  Version: $VERSION"
+    exit
+fi
+
+if [ $CONFIRMFLAG -ne 0 ]; then
+    printf "execute <$CMD> on <$(echo $HOSTS)> (y/n)?" > /dev/tty
+    read REPLY < /dev/tty
+else
+    REPLY="y"
+fi
+
+if [ "$REPLY" == "y" -o "$REPLY" = "Y" ]; then
+    echo "$(date) : $PROG starting"
+    for HOST in $HOSTS; do
+	if [ $QUIETFLAG -eq 0 ]; then echo "$HOST === <$CMD> ==="; fi
+	if [ $BACKGROUNDFLAG -eq 0 ]; then
+	    ssh $HOST "$CMD"
+	else
+	    ssh $HOST "$CMD" &
+	fi
+	if [ $QUIETFLAG -eq 0 ]; then echo; fi
+    done
+    wait	# No effect in foreground mode
+    echo "$(date) : $PROG finished"
+else
+    echo "$PROG exiting"
+fi
+
+exit 0
+
+# Notes:
+# 1. Used awk for when the much cleaner "sed -r" isn't available...
+#	x) HOSTS=$(echo "$HOSTS" | sed -r "s/$OPTARG//g");;
