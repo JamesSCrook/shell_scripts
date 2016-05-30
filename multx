@@ -40,9 +40,9 @@
 # This script is a template. That is, it will almost certainly be more useful if
 # it's modified to suit your particular environment.
 ################################################################################
-# James S. Crook	2016/03/07
+# James S. Crook	2016/05/28
 ################################################################################
-VERSION=v0.0.5
+VERSION=v0.1.0
 PROG=$(basename $0)
 
 ######### Define hostname group(s) and options
@@ -53,28 +53,30 @@ HOST_GROUP_3="pebbles bamm-bamm"
 CONFIRMFLAG=0
 BACKGROUNDFLAG=0
 QUIETFLAG=0
-HOSTS=""
+HOSTNAMES=""
+OUTFILEPAT=""
 
-OPTIONS="123abcf:h:qx:"
+OPTIONS="123abch:f:o:qx:"
 while getopts "$OPTIONS" OPTION; do
     case $OPTION in
-	1) HOSTS="$HOSTS $HOST_GROUP_1";;
-	2) HOSTS="$HOSTS $HOST_GROUP_2";;
-	3) HOSTS="$HOSTS $HOST_GROUP_3";;
-	a) HOSTS="$HOSTS $HOST_GROUP_1 $HOST_GROUP_2 $HOST_GROUP_3";;
+	1) HOSTNAMES="$HOSTNAMES $HOST_GROUP_1";;
+	2) HOSTNAMES="$HOSTNAMES $HOST_GROUP_2";;
+	3) HOSTNAMES="$HOSTNAMES $HOST_GROUP_3";;
+	a) HOSTNAMES="$HOSTNAMES $HOST_GROUP_1 $HOST_GROUP_2 $HOST_GROUP_3";;
 	b) BACKGROUNDFLAG=1;;
 	c) CONFIRMFLAG=1;;
+	h) HOSTNAMES="$HOSTNAMES $OPTARG";;
 	f) if [ -r $OPTARG ]; then
-		HOSTS="$HOSTS $(cat $OPTARG)"
+		HOSTNAMES="$HOSTNAMES $(cat $OPTARG)"
 	    else
 		echo "$PROG: cannot read file '$OPTARG'"
 	    fi;;
-	h) HOSTS="$HOSTS $OPTARG";;
+	o) OUTFILEPAT="$OPTARG";;
 	q) QUIETFLAG=1;;
-	x) HOSTS=$(echo "$HOSTS" | awk -v optarg="$OPTARG" '{gsub(optarg, ""); print $0}');;
+	x) HOSTNAMES=$(echo "$HOSTNAMES" | awk -v optarg="$OPTARG" '{gsub(optarg, ""); print $0}');;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND-1))
 
 CMD=$*
 
@@ -87,16 +89,17 @@ if [ "$CMD" == "" ]; then
     echo "	-a		: hostnames: $HOST_GROUP_1 $HOST_GROUP_2 $HOST_GROUP_3"
     echo "	-b		: background mode"
     echo "	-c		: confirmation mode"
-    echo "	-h <host_list>	: add a hostname or 'hostname_1 ... hostname_n'"
-    echo "	-f <file>	: read a file containing hostname(s)"
+    echo "	-h host_list	: add a hostname or 'hostname_1 ... hostname_n'"
+    echo "	-f file		: read a file containing hostname(s)"
+    echo "	-o outfilepat	: output file pattern (\"'\${HOSTNAME}.info'\" is a useful choice)"
     echo "	-q		: quiet mode"
-    echo "	-x <ERE>	: eXclude all/part of hostname(s) containing this ERE (pattern)"
+    echo "	-x ERE		: eXclude all/part of hostname(s) containing this ERE (pattern)"
     echo "  Version: $VERSION"
     exit
 fi
 
 if [ $CONFIRMFLAG -ne 0 ]; then
-    printf "execute <$CMD> on <$(echo $HOSTS)> (y/n)?" > /dev/tty
+    printf "execute <$CMD> on <$(echo $HOSTNAMES)> (y/n)?" > /dev/tty
     read REPLY < /dev/tty
 else
     REPLY="y"
@@ -104,13 +107,25 @@ fi
 
 if [ "$REPLY" == "y" -o "$REPLY" = "Y" ]; then
     echo "$(date) : $PROG starting"
-    for HOST in $HOSTS; do
-	if [ $QUIETFLAG -eq 0 ]; then echo "$HOST === <$CMD> ==="; fi
-	if [ $BACKGROUNDFLAG -eq 0 ]; then
-	    ssh $HOST "$CMD"
+    for HOSTNAME in $HOSTNAMES; do
+	if [ $QUIETFLAG -eq 0 ]; then echo "$HOSTNAME === <$CMD> ==="; fi
+
+	if [ "$OUTFILEPAT" == "" ]; then
+	    if [ $BACKGROUNDFLAG -eq 0 ]; then
+		ssh $HOSTNAME "$CMD"
+	    else
+		ssh $HOSTNAME "$CMD" &
+	    fi
 	else
-	    ssh $HOST "$CMD" &
+	    H=$HOSTNAME			# so $H and $HOSTNAME will both work!
+	    LOCOUTFILE=$(eval echo $OUTFILEPAT)
+	    if [ $BACKGROUNDFLAG -eq 0 ]; then
+		ssh $HOSTNAME "$CMD" > "$LOCOUTFILE"
+	    else
+		ssh $HOSTNAME "$CMD" > "$LOCOUTFILE" &
+	    fi
 	fi
+
 	if [ $QUIETFLAG -eq 0 ]; then echo; fi
     done
     wait	# No effect in foreground mode
@@ -120,7 +135,3 @@ else
 fi
 
 exit 0
-
-# Notes:
-# 1. Used awk for when the much cleaner "sed -r" isn't available...
-#	x) HOSTS=$(echo "$HOSTS" | sed -r "s/$OPTARG//g");;
