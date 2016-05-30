@@ -1,0 +1,4 @@
+Notes:
+
+1. Used awk for when the much cleaner "sed -r" isn't available...
+     x) HOSTS=$(echo "$HOSTS" | sed -r "s/$OPTARG//g");;
