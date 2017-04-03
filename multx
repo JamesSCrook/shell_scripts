@@ -3,7 +3,7 @@
 ################################################################################
 # multx
 #
-# Copyright (c) 2016, James S. Crook
+# Copyright (c) 2016-2017, James S. Crook
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,9 +40,9 @@
 # This script is a template. That is, it will almost certainly be more useful if
 # it's modified to suit your particular environment.
 ################################################################################
-# James S. Crook	2016/05/28
+# James S. Crook	2017/04/04
 ################################################################################
-VERSION=v0.1.0
+VERSION=1.0.0
 PROG=$(basename $0)
 
 ######### Define hostname group(s) and options
@@ -53,10 +53,11 @@ HOST_GROUP_3="pebbles bamm-bamm"
 CONFIRMFLAG=0
 BACKGROUNDFLAG=0
 QUIETFLAG=0
+SSHARGS=""
 HOSTNAMES=""
 OUTFILEPAT=""
 
-OPTIONS="123abch:f:o:qx:"
+OPTIONS="123abch:f:o:qs:x:"
 while getopts "$OPTIONS" OPTION; do
     case $OPTION in
 	1) HOSTNAMES="$HOSTNAMES $HOST_GROUP_1";;
@@ -73,6 +74,7 @@ while getopts "$OPTIONS" OPTION; do
 	    fi;;
 	o) OUTFILEPAT="$OPTARG";;
 	q) QUIETFLAG=1;;
+	s) SSHARGS="$SSHARGS $OPTARG";;
 	x) HOSTNAMES=$(echo "$HOSTNAMES" | awk -v optarg="$OPTARG" '{gsub(optarg, ""); print $0}');;
     esac
 done
@@ -81,25 +83,29 @@ shift $((OPTIND-1))
 CMD=$*
 
 if [ "$CMD" == "" ]; then
-    echo "usage: $PROG [option(s)] remote_command"
-    echo "   where options are: $OPTIONS"
-    echo "	-1		: hostnames: $HOST_GROUP_1"
-    echo "	-2		: hostnames: $HOST_GROUP_2"
-    echo "	-3		: hostnames: $HOST_GROUP_3"
-    echo "	-a		: hostnames: $HOST_GROUP_1 $HOST_GROUP_2 $HOST_GROUP_3"
-    echo "	-b		: background mode"
-    echo "	-c		: confirmation mode"
-    echo "	-h host_list	: add a hostname or 'hostname_1 ... hostname_n'"
-    echo "	-f file		: read a file containing hostname(s)"
-    echo "	-o outfilepat	: output file pattern (\"'\${HOSTNAME}.info'\" is a useful choice)"
-    echo "	-q		: quiet mode"
-    echo "	-x ERE		: eXclude all/part of hostname(s) containing this ERE (pattern)"
-    echo "  Version: $VERSION"
+    echo "usage (version $VERSION):
+$PROG [option(s)] remote_command
+  Where options are: $OPTIONS
+    -1			:+ hostnames: $HOST_GROUP_1
+    -2			:+ hostnames: $HOST_GROUP_2
+    -3			:+ hostnames: $HOST_GROUP_3
+    -a			:+ hostnames: $HOST_GROUP_1 $HOST_GROUP_2 $HOST_GROUP_3
+    -b			:  background mode
+    -c			:  confirmation mode
+    -h host_list	:+ add a hostname or 'hostname_1 ... hostname_n'
+    -f file		:+ read a file containing hostname(s)
+    -o outfilepat	:  output file pattern (\"'\${HOSTNAME}.info'\" is a useful choice)
+    -q			:  quiet mode
+    -s ssh_arg(s)	:+ arguments to be passed to ssh
+    -x ERE		:+ eXclude all/part of hostname(s) containing this ERE (pattern)
+    '+' options may be used more than once and/or combined with others
+multx Copyright (C) 2016-2017 James S. Crook
+This program comes with ABSOLUTELY NO WARRANTY and is distributed under the FreeBSD license."
     exit
 fi
 
 if [ $CONFIRMFLAG -ne 0 ]; then
-    printf "execute <$CMD> on <$(echo $HOSTNAMES)> (y/n)?" > /dev/tty
+    printf "execute <ssh $SSHARGS $CMD> on <$(echo $HOSTNAMES)> (y/n)?" > /dev/tty
     read REPLY < /dev/tty
 else
     REPLY="y"
@@ -112,17 +118,17 @@ if [ "$REPLY" == "y" -o "$REPLY" = "Y" ]; then
 
 	if [ "$OUTFILEPAT" == "" ]; then
 	    if [ $BACKGROUNDFLAG -eq 0 ]; then
-		ssh $HOSTNAME "$CMD"
+		ssh $SSHARGS $HOSTNAME "$CMD"
 	    else
-		ssh $HOSTNAME "$CMD" &
+		ssh $SSHARGS $HOSTNAME "$CMD" &
 	    fi
 	else
 	    H=$HOSTNAME			# so $H and $HOSTNAME will both work!
 	    LOCOUTFILE=$(eval echo $OUTFILEPAT)
 	    if [ $BACKGROUNDFLAG -eq 0 ]; then
-		ssh $HOSTNAME "$CMD" > "$LOCOUTFILE"
+		ssh $SSHARGS $HOSTNAME "$CMD" > "$LOCOUTFILE"
 	    else
-		ssh $HOSTNAME "$CMD" > "$LOCOUTFILE" &
+		ssh $SSHARGS $HOSTNAME "$CMD" > "$LOCOUTFILE" &
 	    fi
 	fi
 
