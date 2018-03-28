@@ -1,7 +1,13 @@
-Mon May 30 20:34:16 AEST 2016
-James S. Crook
-v0.1.0 : added the -o option
+v1.0.0 - Wed Mar 28 13:08:34 AEDT 2018
 
-Tue Apr  4 08:48:50 AEST 2017
-James S. Crook
-v1.0.0 : added the -s option
+1. Added GitHub pages and flipped the time order of CHANGE_LOG
+   Note: multx is unchanged, hence still v1.0.0
+
+v1.0.0 - Tue Apr  4 08:48:50 AEST 2017
+
+1. added the -s option
+
+v0.0.0 - Mon May 30 20:34:16 AEST 2016
+
+1. added the -o option
+
