@@ -1,6 +1,8 @@
 # multx
 
-Please refer to the github-pages link: [https://jamesscrook.github.io/multx](https://jamesscrook.github.io/multx)
+See
+[https://yosj.com.au/staff/shell_scripts/multx/multx.html](https://yosj.com.au/staff/shell_scripts/multx/multx.html)
+for details.
 
 But, very briefly, multx is a \*nix shell script that executes the same command(s) on multiple
 \*nix hosts - either sequentially (synchronously) or in parallel (asynchronously).
