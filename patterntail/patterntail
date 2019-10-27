@@ -1,0 +1,180 @@
+#!/bin/sh
+
+################################################################################
+################################################################################
+# patterntail
+#
+# Copyright (c) 2019, James S. Crook
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# The views and conclusions contained in the software and documentation are those
+# of the authors and should not be interpreted as representing official policies,
+# either expressed or implied, of the FreeBSD Project.
+################################################################################
+################################################################################
+
+################################################################################
+# This script searches a (log) file for the first occurrance of a particular
+# pattern. It is assumed the pattern will be a timestamp. This script is
+# intended to be used to search through system administration logs (e.g.,
+# Oracle alert logs, Linux system logs, etc. It always searches relevant to
+# "now", when it's started.
+#
+# Examples that have been tested:
+#  patterntail -f '^%a %b %d ..:..:.. %Y|^%Y-%m-%dT..:..:..' oracle_alert_log
+#
+# v0.0.1	Initial version
+################################################################################
+
+PROG=$(basename $0)
+
+# Default values
+LOOKBACKITERATIONS=1	# now
+LOOKBACKSECONDS=86400	# 1 day
+FORMATSTRING="%Y%m%d"	# YYYYMMDD
+COUNT=1
+MAXLOOKBACKITERATIONS=25
+MAXCOUNT=500
+REVERSESEARCHFLAG=0
+VERBOSITY=0
+EPOCHSECS=$(date +%s)
+
+function displayusagemessage {
+    echo "usage: $PROG [options] filename"
+    echo "  Where options are:"
+    echo "    [-f Format_string]       default: $FORMATSTRING"
+    echo "    [-c count]               default: 1"
+    echo "    [-i lookback_iterations] default: $LOOKBACKITERATIONS [1 to $MAXLOOKBACKITERATIONS]"
+    echo "    [-s lookback_seconds]    default: $LOOKBACKSECONDS (1 day) [>=0]"
+    echo "    [-r] reverse search      default: forward (from the start of the file)"
+    echo "    [-v] increase verbosity  (sent to stderr)"
+}
+
+OPTIONS="f:c:i:s:rv"
+while getopts "$OPTIONS" OPTION; do
+    case $OPTION in
+	f) FORMATSTRING="$OPTARG";;
+	c) COUNT=$OPTARG;;
+	i) LOOKBACKITERATIONS=$OPTARG;;
+	s) LOOKBACKSECONDS=$OPTARG;;
+	r) REVERSESEARCHFLAG=1;;
+	v) VERBOSITY=$((VERBOSITY+1));;
+	*) displayusagemessage; exit 1;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ $# -ne 1 ]; then
+    displayusagemessage
+    exit 1
+fi
+INPUTFILE=$1
+
+if [ \! -r $INPUTFILE ]; then
+    echo "ERROR: '$INPUTFILE' is not a readable file"
+    exit 1
+fi
+
+if [ $LOOKBACKSECONDS -lt 0 ]; then
+    echo "ERROR: lookback_seconds must be positive, not $LOOKBACKSECONDS"
+    exit 1
+fi 
+
+if [ $COUNT -lt 1 ]; then
+    echo "ERROR: count must be between 1 and $MAXCOUNT, not $COUNT"
+    exit 1
+fi 
+
+if [ $LOOKBACKITERATIONS -lt 1 -o $LOOKBACKITERATIONS -gt $MAXLOOKBACKITERATIONS ]; then
+    echo "ERROR: lookback_iterations must between 1 and $MAXLOOKBACKITERATIONS, inclusive"
+    displayusagemessage
+    exit 1
+fi
+
+if [ "$FORMATSTRING" == "" ]; then
+    echo "ERROR: format_string cannot be empty"
+    exit 1
+fi 
+
+LOOKBACKCOUNT=1
+REGEXP=$(while [ $LOOKBACKCOUNT -le $LOOKBACKITERATIONS ]; do
+    echo "$(date -d @$EPOCHSECS "+$FORMATSTRING")"
+    EPOCHSECS=$((EPOCHSECS-$LOOKBACKSECONDS))
+    LOOKBACKCOUNT=$((LOOKBACKCOUNT+1))
+done | sort -u | awk '{
+    if (NR > 1) {
+	printf("|");
+    }
+    gsub("/", "\\/");
+    printf("%s", $0);
+}')
+
+ESCAPEDREGEXP=$(echo "$REGEXP" | sed '
+    s:\$:\\\$:g
+    s:":\\":g
+')
+
+# Send this output to stderr
+if [ $VERBOSITY -gt 0 ]; then
+    echo "       REGEXP=[$REGEXP]"
+    echo "ESCAPEDREGEXP=[$ESCAPEDREGEXP]"
+    if [ $VERBOSITY -gt 1 ]; then
+	echo -n "NARGS=[$#], LOOKBACKITERATIONS=[$LOOKBACKITERATIONS], LOOKBACKSECONDS=[$LOOKBACKSECONDS], " >&2
+	echo "FORMATSTRING=[$FORMATSTRING], VERBOSITY=[$VERBOSITY] INPUTFILE=[$INPUTFILE]" >&2
+    fi
+fi
+
+if [ $REVERSESEARCHFLAG -ne 0 ]; then
+    ### Find the line number of the COUNTth occurance of REGEXP - searching from the start of the file.
+    FIRSTLINENUMBER=$(awk -v count=$COUNT "
+	BEGIN { c = 0; }
+	/$ESCAPEDREGEXP/ {
+	    lastnumbertable[++c] = NR;
+	}
+	END {
+	    lastnumberindex = c-count+1;
+	    print lastnumbertable[lastnumberindex];
+	}
+    " $INPUTFILE)
+else
+    ### Find the line number of the COUNTth occurance of REGEXP - searching from the end of the file.
+    FIRSTLINENUMBER=$(awk -v count=$COUNT "
+	BEGIN { c = 0; }
+	/$ESCAPEDREGEXP/ {
+	    if (++c == count) {
+		print NR;
+		exit;
+	    }
+	}
+    " $INPUTFILE)
+fi
+
+### If the input file does not contain any lines matching the regular expression(s), exit with a
+### return code of 1.
+if [ "$FIRSTLINENUMBER" != "" ]; then
+    sed -n -e "$FIRSTLINENUMBER,\$p" $INPUTFILE
+    exit $?
+fi
+
+# Note: decided against: sed -nr -e "H; /$ESCAPEDREGEXP/ h; \$ { g; p; }", etc. for
+# clarity and efficiency (and it prodcuces the entire file when there is no pattern match).
