@@ -38,10 +38,7 @@
 
 # Do not _execute_ this script, "dot it".
 #
-# James S. Crook	v0.0.1	2006/03/13 - initial version
-# James S. Crook	v1.0.0	2007/05/10 - added username output
-# James S. Crook	v1.0.1	2016/02/04 - added GPL3 license
-# James S. Crook	v1.0.2	2016/02/18 - changed to Free BSD license
+# James S. Crook	v1.0.3	2020/02/27 - added $* to ssh-add
 ################################################################################
 
 MYUID=$(whoami)
@@ -62,7 +59,7 @@ if [ "$SSHAGENTPIDS" == "" ]; then
     echo "==================== ==================== ===================="
     echo "PASSPHRASE PASSPHRASE PASSPHRASE PASSPHRASE PASSPHRASE"
     echo "==================== ==================== ===================="
-    ssh-add
+    ssh-add $*
     cat $ENVFILE
 else
     . $ENVFILE
