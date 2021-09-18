@@ -1,7 +1,7 @@
 # patterntail
 
 See
-[https://yosj.com.au/staff/shell_scripts/patterntail/patterntail.php](https://yosj.com.au/staff/shell_scripts/patterntail/patterntail.php)
+[https://yosj.com.au/staff/shell_scripts/patterntail](https://yosj.com.au/staff/shell_scripts/patterntail)
 for details.
 
 patterntail searches a (log) file for the occurrance(s) of a particular pattern, and then output the rest of the file from that point (the 'tail').

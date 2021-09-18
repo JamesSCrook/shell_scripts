@@ -1,7 +1,7 @@
 # difftree
 
 See
-[https://yosj.com.au/staff/shell_scripts/difftree/difftree.php](https://yosj.com.au/staff/shell_scripts/difftree/difftree.php)
+[https://yosj.com.au/staff/shell_scripts/difftree](https://yosj.com.au/staff/shell_scripts/difftree)
 for details.
 
 difftree compares trees of files. It's a bit like a cut-down (GNU) diff -r, but with a couple of twists.
