@@ -1,0 +1,411 @@
+################################################################################
+################################################################################
+# splitcompress
+#
+# Copyright (c) 2021-2022, James S. Crook
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# The views and conclusions contained in the software and documentation are those
+# of the authors and should not be interpreted as representing official policies,
+# either expressed or implied, of the FreeBSD Project.
+################################################################################
+################################################################################
+#
+#
+################################################################################
+# James S. Crook	2021/11/27	v0.0.1 Initial version
+################################################################################
+
+################################################################################
+# Environment variables
+################################################################################
+PROG=$(basename $0)
+
+NUMDIGITS=4;		NUMDIGITSMIN=1;		NUMDIGITSMAX=10
+NUMPROCS=2;		NUMPROCSMIN=1;		NUMPROCSMAX=32
+PARTSIZESTR=2G;		PARTSIZEMIN=1;		PARTSIZEMAX=$((128*1024*1024*1024))
+PIPESIZESTR=64K;	PIPESIZEMIN=1;		PIPESIZEMAX=$(( 64*1024*1024))
+READSIZESTR=1M;		READSIZEMIN=1;		READSIZEMAX=2147479552	# dd ibs max
+
+COMPRESSEDPARTSTR=_compressed_part_
+COMPRESSEDSUMMARYSTR=:compressed_summary
+UNCOMPRESSEDSUMMARYSTR=:uncompressed_summary
+
+CHECKSUMCMD=sha256sum
+COMPRESSCMD=xz
+UNCOMPRESSCMD=xzcat				# or 'xz --decompress --stdout'
+DDCMD=dd
+DDOUTFILEFMT="tmp_%d_proc_%02d"			# requires $$ and PROCNUM
+DESTINATIONDIR=.
+UNCOMPRESSEDCHECKSUMFLAG=1
+IDLETIME="10 seconds ago"
+UNCOMPRESSEDPARTSTR="_uncompressed_part_$$_"	# temporary files
+SPLITLOGLINECHARS=$'\n\t\t\t'			# insert these chars to split long output line
+VERBOSITY=2
+
+
+################################################################################
+# Display the usage message
+################################################################################
+function usagemsg {
+    echo
+    echo "usage: $PROG [OPTIONS] file ..."
+    echo "where OPTIONS are:"
+    echo "  -c Compress_command (default '$COMPRESSCMD')"
+    echo "  -d number_of_numeric Digits (default $NUMDIGITS [$NUMDIGITSMIN to $NUMDIGITSMAX])"
+    echo "  -i Intermediate_block_size (default '$PIPESIZESTR' [$PIPESIZEMIN to $PIPESIZEMAX]) [*]"
+    echo "  -k checKsum_command (default '$CHECKSUMCMD')"
+    echo "  -n Number_of_parallel_processes (default $NUMPROCS [$NUMPROCSMIN to $NUMPROCSMAX])"
+    echo "  -r Read_block_size (default '$READSIZESTR' [$READSIZEMIN to $READSIZEMAX]) [*]"
+    echo "  -s part_Size, uncompressed (default '$PARTSIZESTR' [$PARTSIZEMIN to $PARTSIZEMAX]) [*]"
+    echo "  -t minimum_idle_Time (default '$IDLETIME')"
+    echo "  -u Uncompress_command (default '$UNCOMPRESSCMD')"
+    echo "  -v Verbosity level (default $VERBOSITY)"
+    echo "  -C Compressed summary name (default '$COMPRESSEDSUMMARYSTR')"
+    echo "  -D Destination_directory (default '.')"
+    echo "  -N partition Name (default '$COMPRESSEDPARTSTR')"
+    echo "  -U Uncompressed summary name (default '$UNCOMPRESSEDSUMMARYSTR')"
+    echo "  -w Wide (do not wrap the) output lines"
+    echo "  -x do not calculate (eXclude) the uncompressed checksums"
+    echo
+    echo "  [*] Legal size units are: k, K, m, M, g, and G"
+    echo
+}
+
+
+################################################################################
+# $1: SIZE, $2:MIN, $3:MIN, $4:error_message_component
+################################################################################
+function check_min_max {
+    if [ $1 -lt $2 -o $1 -gt $3 ]; then
+	msg 0 "E Bad $4: $1";
+	usagemsg
+	exit 1
+    fi
+}
+
+
+################################################################################
+# Display a line of status output, if running at a sufficiently high verbostiy
+################################################################################
+function msg {
+    M_VERBOSITY=$1; shift
+    if [ $M_VERBOSITY -le $VERBOSITY ]; then
+	echo "$(date +%H:%M:%S)[$M_VERBOSITY]$*"
+    fi
+}
+
+
+################################################################################
+# Sets the global variable SIZE - ugly, but maybe some day I'll fix it!
+################################################################################
+function convert_size {
+    SIZESTR=$1
+    msg 6 "CS: SIZESTR=$SIZESTR"
+    CS_VALUE=$(echo $SIZESTR | sed 's/^[^0-9]*\([0-9][0-9]*\)[^0-9]*$/\1/')
+    CS_UNIT=$(echo $SIZESTR | sed 's/^[^0-9]*[0-9][0-9]*\([^0-9]*\)$/\1/')
+    if [ "$CS_UNIT" == "" ]; then
+	SIZE=$SIZESTR
+    else
+	case $CS_UNIT in
+	    k) SIZE=$((CS_VALUE*1000));;
+	    K) SIZE=$((CS_VALUE*1024));;
+	    m) SIZE=$((CS_VALUE*1000*1000));;
+	    M) SIZE=$((CS_VALUE*1024*1024));;
+	    g) SIZE=$((CS_VALUE*1000*1000*1000));;
+	    G) SIZE=$((CS_VALUE*1024*1024*1024));;
+	    *) msg 0 "Illegal unit '$CS_UNIT'"; exit 1;;
+	esac
+    fi
+    msg 6 "CS: SIZESTR=$SIZESTR, CS_VALUE=$CS_VALUE, CS_UNIT=$CS_UNIT, SIZE=$SIZE"
+}
+
+
+################################################################################
+# This function is called asynchronously - once for each processor. Each invocation
+# processes every NUMPROCSs part/chunk/block of the file. For example, if NUMPROCS is 3:
+# Proc 0: 0, 3, 6 ...
+# Proc 1: 1, 4, 7 ...
+# Proc 2: 2, 5, 8 ...
+################################################################################
+function process_parts {
+    PP_CMD=$1
+    PP_PROCNUM=$2
+    PP_PARTSTR=$3
+    PP_SUFFIX=$4
+    msg 5 "    +++ PP_CMD=[$PP_CMD], PP_PROCNUM=[$PP_PROCNUM], PP_PARTSTR=[$PP_PARTSTR], PP_SUFFIX=[$PP_SUFFIX]"
+	for ((PP_PARTNUM=PP_PROCNUM; PP_PARTNUM<NUMPARTS; PP_PARTNUM+=NUMPROCS)) {
+	    DDOUTFILE=${DESTINATIONDIR}$(printf "$DDOUTFILEFMT" $$ $PP_PROCNUM)
+	    PP_SKIP=$(printf "%06d" $((PP_PARTNUM*BLOCKSPERPART)) )
+	    PP_READCMD="nice $DDCMD if='$ESCSRCFILE' ibs=$READSIZE count=$BLOCKSPERPART skip=$PP_SKIP obs=$PIPESIZE 2> $DDOUTFILE"
+	    PP_PARTFILE="${DESTINATIONDIR}${BASENAME}${PP_PARTSTR}"$(printf "${NUMFMTSTR}" $PP_PARTNUM)${PP_SUFFIX}
+	    msg 2  "    $PP_READCMD | ${SPLITLOGLINECHARS}nice $PP_CMD > '${PP_PARTFILE}'"
+	    eval       "$PP_READCMD |                     nice $PP_CMD > '${PP_PARTFILE}'"
+
+	    # Set the mod time of the compressed part file to the same as the source file
+	    CMD="touch -r '$ESCSRCFILE' '${PP_PARTFILE}'"
+	    eval "$CMD"
+
+	    PP_DDBYTES=$(awk '/^[0-9][0-9]* bytes/ { print $1; }' $DDOUTFILE)
+	    rm $DDOUTFILE
+
+	    ### Confirm that dd read ("copied") the correct number of bytes
+	    if [ $PP_DDBYTES -eq $PARTSIZE -o \( $PP_DDBYTES -eq $((FILESIZE%PARTSIZE)) -a $PP_PARTNUM -eq $((NUMPARTS-1)) \) ]; then
+		msg 4 "    === Part=$PP_PARTNUM, Proc=$PP_PROCNUM: read $PP_DDBYTES bytes"
+	    else
+		msg 0 "E   === Part=$PP_PARTNUM, Proc=$PP_PROCNUM: read $PP_DDBYTES bytes"
+	    fi
+	}
+    msg 5 "    --- PP_PROCNUM=$PP_PROCNUM"
+}
+
+
+################################################################################
+# Process a file. See the comments at the top of the script.
+################################################################################
+function process_file {
+    msg 1 ""
+    SRCFILE=$1
+    ESCSRCFILE=$(echo $SRCFILE | sed "s/'/'\\\''/g")
+
+    if [ "$SRCFILE" == "$ESCSRCFILE" ]; then
+	msg 1 "  Processing [$ESCSRCFILE] $(date +%Y/%m/%d) ========================================"
+    else
+	msg 1 "  Processing [$SRCFILE] ([$ESCSRCFILE]) $(date +%Y/%m/%d) ========================================"
+    fi
+
+    MODTIMESTRBEG=$(stat -c %w "$SRCFILE")	# Save the modification time string to compare after processing
+
+    # find returns the name of the file if it was last modified "too recently".
+    # find returns nothing if the file was last modified a sufficiently long time ago.
+    if [ "$(eval "find '$ESCSRCFILE' -newermt '$IDLETIME'")" == "" ]; then
+	msg 3 "   Last modification time of [$SRCFILE] is older than '$IDLETIME'"
+    else
+	msg 0 "W  Last modification time of [$SRCFILE] is newer than '$IDLETIME'"
+	msg 0 "   $(eval "ls -l '$ESCSRCFILE'")"
+	RETURNVALUE=1
+    fi
+
+    BASENAME=$(basename "$ESCSRCFILE")
+    FILESIZE=$(stat -c %s "$SRCFILE")
+    NUMPARTS=$(( FILESIZE/PARTSIZE + (FILESIZE%PARTSIZE != 0) ))
+    msg 2 "   Starting split/compress of [$SRCFILE]: ${FILESIZE} B, $NUMPARTS parts)"
+
+    # Call process_parts once per processor allocated
+    for ((PROCNUM=0; PROCNUM<NUMPROCS; PROCNUM++)) {
+	msg 4 "   Calling process_parts $COMPRESSCMD $PROCNUM $COMPRESSEDPARTSTR $COMPRESSSUFFIX"
+	process_parts "$COMPRESSCMD" $PROCNUM "$COMPRESSEDPARTSTR" "$COMPRESSSUFFIX" &	######### NOTE: asyncronously!!! ######
+    }
+    wait		# Wait for all the asyncronous job(s) to finish
+
+    ### Caclculate the checksum on the source file
+    msg 2 "   Starting checksum of source file [$ESCSRCFILE]"
+    SRCCHECKSUMFILE="${DESTINATIONDIR}${BASENAME}$CHECKSUMSUFFIX"
+    msg 2 "    nice $CHECKSUMCMD '$ESCSRCFILE' > ${SPLITLOGLINECHARS}'$SRCCHECKSUMFILE'"
+    eval      "nice $CHECKSUMCMD '$ESCSRCFILE' >                     '$SRCCHECKSUMFILE'"
+
+    msg 2 "   Starting checksum comparison of [$SRCFILE]"
+    CMD="sed -r '$COMPRESSEDCHECKSUMOUTPUTSEDPROG' '$SRCCHECKSUMFILE'"
+    CHECKSUM1=$(eval "$CMD")
+    CMD="nice $UNCOMPRESSCMD '${DESTINATIONDIR}${BASENAME}${COMPRESSEDPARTSTR}'*${COMPRESSSUFFIX} | $CHECKSUMCMD"
+    msg 2 "    $CMD"
+    CHECKSUM2=$(eval "$CMD | sed -r '$COMPRESSEDCHECKSUMOUTPUTSEDPROG'")
+
+    if [ "$CHECKSUM1" == "$CHECKSUM2" ]; then
+	msg 1 "   Checksums of '$ESCSRCFILE' match		!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	msg 5 "    Checksum 1: '$CHECKSUM1'"
+	msg 5 "    Checksum 2: '$CHECKSUM2'"
+    else
+	msg 0 "E  Checksums of '$ESCSRCFILE' DO NOT MATCH - ERROR!"
+	msg 0 "    Checksum 1: '$CHECKSUM1'"
+	msg 0 "    Checksum 2: '$CHECKSUM2'"
+	RETURNVALUE=2
+    fi
+
+    msg 2 "   Starting checksums of compressed parts: '${BASENAME}${COMPRESSEDPARTSTR}'*${COMPRESSSUFFIX}"
+    CMDPART1="nice $CHECKSUMCMD '${DESTINATIONDIR}${BASENAME}${COMPRESSEDPARTSTR}'*${COMPRESSSUFFIX} >"
+    CMDPART2="'${DESTINATIONDIR}${BASENAME}${COMPRESSEDSUMMARYSTR}${CHECKSUMSUFFIX}'"
+    msg 2 "    ${CMDPART1}${SPLITLOGLINECHARS}${CMDPART2}"
+    eval      "${CMDPART1}                    ${CMDPART2}"
+
+    if [ $UNCOMPRESSEDCHECKSUMFLAG -ne 0 ]; then
+	msg 2 "   Starting checksums of uncompressed parts of source file [$ESCSRCFILE]"
+	# Call process_parts once per processor allocated
+	for ((PROCNUM=0; PROCNUM<NUMPROCS; PROCNUM++)) {
+	    msg 4 "   Calling process_parts $CHECKSUMCMD $PROCNUM $UNCOMPRESSEDPARTSTR $CHECKSUMSUFFIX"
+	    ### NOTE: asyncronously!!!
+	    process_parts "$CHECKSUMCMD" $PROCNUM "$UNCOMPRESSEDPARTSTR" "$CHECKSUMSUFFIX" &
+	}
+	wait		# Wait for all the asyncronous job(s) to finish
+
+
+	TMPFILE=${DESTINATIONDIR}tmp_$$
+	UNCOMPRESSEDPARTSCHECKSUMFILE="${DESTINATIONDIR}${BASENAME}${UNCOMPRESSEDSUMMARYSTR}${CHECKSUMSUFFIX}"
+	eval "ls '${DESTINATIONDIR}${BASENAME}${UNCOMPRESSEDPARTSTR}'"*$CHECKSUMSUFFIX | while read -r UNCOMPCHECKSUMFILE; do
+	    # We want 2 spaces (extra " ") between the hash and temporary filename
+	    echo $(awk '{print $1;}' "$UNCOMPCHECKSUMFILE")" " $(echo "$UNCOMPCHECKSUMFILE" | sed "$UNCOMPRESSEDCHECKSUMOUTPUTSEDPROG")
+	    rm "$UNCOMPCHECKSUMFILE"
+	done > $TMPFILE			# > tmpfile then move because of filenames containing "'" char(s)
+	eval "mv $TMPFILE '$UNCOMPRESSEDPARTSCHECKSUMFILE'"
+    fi
+
+    MODTIMESTREND=$(stat -c %w "$SRCFILE")
+    if [ "$MODTIMESTRBEG" != "$MODTIMESTREND" ]; then
+	msg 0 "W $MODTIMESTRBEG : modification time before"
+	msg 0 "W $MODTIMESTREND : modification time now - the file has probably changed!"
+    fi
+
+    msg 4 "   Calculating the compressed size, % and ratio"
+    CMD="ls -l '${DESTINATIONDIR}${BASENAME}${COMPRESSEDPARTSTR}'*${COMPRESSSUFFIX}"
+    STATSSTRING=$(eval "$CMD" | awk -v filesize=$FILESIZE '
+	BEGIN { totalbyteswritten = 0; }
+	{ totalbyteswritten += $5; }
+	END { printf("Compressed to %d bytes : %.2f%% of %d bytes or %.2f:1",
+	    totalbyteswritten, totalbyteswritten/filesize*100, filesize, filesize/totalbyteswritten); }
+    ')
+    msg 2 "   $STATSSTRING"
+
+    msg 3 "  Processing of [$ESCSRCFILE] finished"
+}
+
+################################################################################
+# Main Program
+################################################################################
+
+######## Check the command line arguments ######################
+if [ $# -lt 1 ]; then
+    usagemsg
+    exit 1
+fi
+
+msg 1 "  Called: $PROG $*"
+
+OPTIONS="c:d:i:k:n:r:s:t:u:v:C:D:N:U:wx"
+while getopts "$OPTIONS" OPTION; do
+    case $OPTION in
+	c) COMPRESSCMD="$OPTARG";;
+	d) NUMDIGITS="$OPTARG";;
+	i) PIPESIZESTR="$OPTARG";;
+	k) CHECKSUMCMD="$OPTARG";;
+	n) NUMPROCS="$OPTARG";;
+	r) READSIZESTR="$OPTARG";;
+	s) PARTSIZESTR="$OPTARG";;
+	t) IDLETIME="$OPTARG";;
+	u) UNCOMPRESSCMD="$OPTARG";;
+	v) VERBOSITY="$OPTARG";;
+	C) COMPRESSEDSUMMARYSTR="$OPTARG";;
+	D) DESTINATIONDIR="$OPTARG";;
+	N) COMPRESSEDPARTSTR="$OPTARG";;
+	U) UNCOMPRESSEDSUMMARYSTR="$OPTARG";;
+	w) SPLITLOGLINECHARS="";;
+	x) UNCOMPRESSEDCHECKSUMFLAG=0;;
+	*) usagemsg; exit 1;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+if [ -d "$DESTINATIONDIR" -a -w "$DESTINATIONDIR" ]; then
+    msg 5 "  Destination '$DESTINATIONDIR' exists and is a writable directory"
+else
+    msg 0 "E '$DESTINATIONDIR' is not a writable directory, aborting"
+    exit 1
+fi
+if [ "$DESTINATIONDIR" == "." ]; then
+    DESTINATIONDIR=""
+else
+    DESTINATIONDIR=$(echo "$DESTINATIONDIR" | sed s:/*$:/:) # force 1 '/' at the end
+fi
+
+######## Convert the size strings to numerical values ##########
+convert_size $PARTSIZESTR; PARTSIZE=$SIZE
+convert_size $READSIZESTR; READSIZE=$SIZE
+convert_size $PIPESIZESTR; PIPESIZE=$SIZE
+
+######## Check the command line arguments that have ranges #####
+check_min_max $NUMDIGITS $NUMDIGITSMIN $NUMDIGITSMAX "number of digits"
+check_min_max $NUMPROCS  $NUMPROCSMIN  $NUMPROCSMAX  "number of processes"
+check_min_max $PARTSIZE  $PARTSIZEMIN  $PARTSIZEMAX  "part size"
+check_min_max $PIPESIZE  $PIPESIZEMIN  $PIPESIZEMAX  "intermediate block size"
+check_min_max $READSIZE  $READSIZEMIN  $READSIZEMAX  "read block size"
+
+######## Check the command line arguments ######################
+if [ $((PARTSIZE%READSIZE)) -ne 0 ]; then
+    msg 0 "E Part size ($PARTSIZESTR=$PARTSIZE) must be multiple of the read block size ($READSIZESTR=$READSIZE)!"
+    exit 1
+fi
+
+CHECKSUMSUFFIX=.$(basename $CHECKSUMCMD)
+COMPRESSSUFFIX=.$(basename $COMPRESSCMD)
+
+# For some reason, when fileNAMES contain particular characters, sha*sum (and others?)
+# precede the hash with backslash character. How odd... So delete it. Also, 
+# assume that the very first "word" of output is the actual checksum (hash), so
+# delete all but that.
+COMPRESSEDCHECKSUMOUTPUTSEDPROG='
+    s:^\\::
+    s: +.+::
+'
+UNCOMPRESSEDCHECKSUMOUTPUTSEDPROG="
+    s:$$_::
+    s:$CHECKSUMSUFFIX$::
+"
+
+NUMFMTSTR="%0${NUMDIGITS}d"
+BLOCKSPERPART=$((PARTSIZE/READSIZE))
+msg 3 "  PARTSIZE:$PARTSIZESTR=$PARTSIZE, READSIZE:$READSIZESTR=$READSIZE, PIPESIZE:$PIPESIZESTR=$PIPESIZE DESTINATIONDIR=$DESTINATIONDIR"
+
+######## Loop through the remaining command args - the source file(s) #####
+RETURNVALUE=0
+for SRCFILE in "$@"; do
+    if [ -r "$SRCFILE" ]; then
+	process_file "$SRCFILE"
+    else
+	msg 0 "W '$SRCFILE' is not a readable file, skipping";
+    fi
+done
+
+exit $RETURNVALUE
+
+###################################################################################
+This script reads a (presumably very large) input file and produces (typically)
+multiple compressed 'part' output files. It is expected that 
+
+Details:
+x. It uses dd to read the file 
+x. Each uncompressed output part file is the same (configurable) size - except the last one, which may be smaller.
+x. Checksums of the original input file, the compressed part files, and (optionally) the uncompressed part files are produced.
+x. It is useful when there is CPU cycles available, but no disk space and/or network capacity.
+
+reads multiple parts of a (presumably very large) inputfile and
+creates multiple compressed output file for each output part.
+- N processor
+functions at a time and
+compresses  into multiple chunks and
+
+Some reasons one might want to do this are:
+1. The use of compression to consume less storage space
+2. The use of compression to consume less network capacity (if copying the files to another system)
+3. If only some part(s) of the file are not copied in tact, only those parts need be resent.
+4. The use of multiple asynchronously running processes to reduce processing time.
+5. The use of multiple asynchronously CPUs when they are noot needed for other work.
+###################################################################################

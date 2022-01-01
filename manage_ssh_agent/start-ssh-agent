@@ -3,7 +3,7 @@
 ################################################################################
 # start-ssh-agent
 #
-# Copyright (c) 2006-2016, James S. Crook
+# Copyright (c) 2006-2022, James S. Crook
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,18 +39,15 @@
 # Do not _execute_ this script, "dot it".
 #
 # James S. Crook	v1.0.3	2020/02/27 - added $* to ssh-add
+# James S. Crook	v1.0.4	2021/11/25 - the PPID may not be init (1)
 ################################################################################
 
 MYUID=$(whoami)
 
 # For the times when we cannot trust $HOME...
 HOMEDIR=$(awk -F : "/^$MYUID:/ { print \$6; }" /etc/passwd)
-
 ENVFILE=$HOMEDIR/.ssh/ssh-agent.env
-
-SSHAGENTPIDS=$(ps -ef | awk -v myuid=$MYUID '
-    $1 == myuid && $3 == 1 && $NF ~ "ssh-agent$" { print $2; }
-')
+SSHAGENTPIDS=$(ps -ef | awk -v myuid=$MYUID '$1 == myuid && $NF ~ "^ssh-agent$" { print $2; }')
 
 if [ "$SSHAGENTPIDS" == "" ]; then
     echo "ssh-agent for $MYUID not running: starting"

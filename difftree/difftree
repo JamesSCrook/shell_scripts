@@ -3,7 +3,7 @@
 ################################################################################
 # difftree
 #
-# Copyright (c) 2019, James S. Crook
+# Copyright (c) 2019-2022, James S. Crook
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -48,16 +48,17 @@
 #
 ################################################################################
 # James S. Crook	2019/10/27	v0.0.1 Initial version
+# James S. Crook	2021/11/29	v0.0.2 Changed indent (4 chars)
 ################################################################################
 
 PROG=$(basename $0)
 
 function usagemsg {
     echo "usage: $PROG [-b] [-n] [-v] dir1 dir2 find_target [...]"
-	echo "	Where: -b : binary comparison (use cmp instead of diff)"
-	echo "	Where: -c : do NOT list file CONTENT difference(s)"
-	echo "	Where: -n : list file NAME difference(s)"
-	echo "	Where: -v : increase verbosity"
+    echo "	Where: -b : binary comparison (use cmp instead of diff)"
+    echo "	Where: -c : do NOT list file CONTENT difference(s)"
+    echo "	Where: -n : list file NAME difference(s)"
+    echo "	Where: -v : increase verbosity"
 }
 
 COMPAREPROGRAM=diff
@@ -72,11 +73,11 @@ DOUBLELINE="===================================================="
 OPTIONS="bcnv"
 while getopts "$OPTIONS" OPTION; do
     case $OPTION in
-		b) COMPAREPROGRAM=cmp;;
-		c) FILECONTENTSDIFFERENCESFLAG=0;;
-		n) FILENAMESDIFFERENCESFLAG=1;;
-		v) VERBOSITY=$((VERBOSITY+1));;
-		*) usagemsg; exit 1;;
+	b) COMPAREPROGRAM=cmp;;
+	c) FILECONTENTSDIFFERENCESFLAG=0;;
+	n) FILENAMESDIFFERENCESFLAG=1;;
+	v) VERBOSITY=$((VERBOSITY+1));;
+	*) usagemsg; exit 1;;
     esac
 done
 shift $((OPTIND-1))
@@ -106,42 +107,42 @@ IFS=$'\n'
 (cd $DIR2; eval find $@ -type f | sed 's:^\./::' | sort) > $DIR2FILENAMESFILE
 
 if [[ $FILENAMESDIFFERENCESFLAG -ne 0 ]]; then
-	diff $DIR1FILENAMESFILE $DIR2FILENAMESFILE > $DIFFERENCESFILE
-	echo $DOUBLELINE
-	echo "File NAME list difference(s) < '$DIR1' : > '$DIR2'"
-	echo $DOUBLELINE
-	if [[ -s $DIFFERENCESFILE ]]; then
-		cat $DIFFERENCESFILE
-	fi
-	echo $DOUBLELINE
+    diff $DIR1FILENAMESFILE $DIR2FILENAMESFILE > $DIFFERENCESFILE
+    echo $DOUBLELINE
+    echo "File NAME list difference(s) < '$DIR1' : > '$DIR2'"
+    echo $DOUBLELINE
+    if [[ -s $DIFFERENCESFILE ]]; then
+	cat $DIFFERENCESFILE
+    fi
+    echo $DOUBLELINE
 fi
 
 if [[ $FILECONTENTSDIFFERENCESFLAG -ne 0 ]]; then
-	for RELPATHNAME in $(sort -u $DIR1FILENAMESFILE $DIR2FILENAMESFILE); do
-		if [ $VERBOSITY -ge 2 ]; then
-			echo "RELPATHNAME=[$RELPATHNAME]"
-		fi
+    for RELPATHNAME in $(sort -u $DIR1FILENAMESFILE $DIR2FILENAMESFILE); do
+	if [ $VERBOSITY -ge 2 ]; then
+	    echo "RELPATHNAME=[$RELPATHNAME]"
+	fi
 
-		if [[ ( -f "$DIR1/$RELPATHNAME" && -r "$DIR1/$RELPATHNAME" ) ]]; then
-			if [[ ( -f "$DIR2/$RELPATHNAME" && -r "$DIR2/$RELPATHNAME" ) ]]; then
-				$COMPAREPROGRAM "$DIR1/$RELPATHNAME" "$DIR2/$RELPATHNAME" > $DIFFERENCESFILE 2>&1
-				SAMECHECKRETURNVALUE=$?
-				if [[ $SAMECHECKRETURNVALUE -eq 0 ]]; then		# files are identical
-					if [[ $VERBOSITY -gt 0 ]]; then
-						echo "== $SINGLELINE '$RELPATHNAME'"
-					fi
-				else											# files differ
-					echo "!= $SINGLELINE '$RELPATHNAME' $SINGLELINE"
-					sed 's:.*:   &:' $DIFFERENCESFILE
-					echo "   $SINGLELINE$SINGLELINE"
-				fi
-			else
-				echo "!> $SINGLELINE '$DIR2:$RELPATHNAME', not found/no access"
-			fi
-		else
-			echo "!< $SINGLELINE '$DIR1:$RELPATHNAME', not found/no access"
+	if [[ ( -f "$DIR1/$RELPATHNAME" && -r "$DIR1/$RELPATHNAME" ) ]]; then
+	    if [[ ( -f "$DIR2/$RELPATHNAME" && -r "$DIR2/$RELPATHNAME" ) ]]; then
+		$COMPAREPROGRAM "$DIR1/$RELPATHNAME" "$DIR2/$RELPATHNAME" > $DIFFERENCESFILE 2>&1
+		SAMECHECKRETURNVALUE=$?
+		if [[ $SAMECHECKRETURNVALUE -eq 0 ]]; then		# files are identical
+		    if [[ $VERBOSITY -gt 0 ]]; then
+			echo "== $SINGLELINE '$RELPATHNAME'"
+		    fi
+		else											# files differ
+		    echo "!= $SINGLELINE '$RELPATHNAME' $SINGLELINE"
+		    sed 's:.*:   &:' $DIFFERENCESFILE
+		    echo "   $SINGLELINE$SINGLELINE"
 		fi
-	done
+	    else
+		echo "!> $SINGLELINE '$DIR2:$RELPATHNAME', not found/no access"
+	    fi
+	else
+	    echo "!< $SINGLELINE '$DIR1:$RELPATHNAME', not found/no access"
+	fi
+    done
 fi
 IFS="$OLDIFS"
 

@@ -1,18 +1,21 @@
+v1.0.2 - Sun 02 Jan 2022 08:20:17 AEDT
+
+    Cosmetic changes
+
 v1.0.1 - Sun Oct 27 11:33:45 AEDT 2019
 
-1. Updated copyright to 2019
-2. Removed docs directory tree
+    Removed docs directory tree
 
 v1.0.0 - Wed Mar 28 13:08:34 AEDT 2018
 
-1. Added GitHub pages and flipped the time order of CHANGE_LOG
-   Note: multx is unchanged, hence still v1.0.0
+    Added GitHub pages and flipped the time order of CHANGE_LOG
+       Note: multx is unchanged, hence still v1.0.0
 
 v1.0.0 - Tue Apr  4 08:48:50 AEST 2017
 
-1. added the -s option
+    Added the -s option
 
 v0.0.0 - Mon May 30 20:34:16 AEST 2016
 
-1. added the -o option
+    Added the -o option
 
