@@ -214,9 +214,9 @@ function process_file {
     # Call process_parts once per processor allocated
     for ((PROCNUM=0; PROCNUM<NUMPROCS; PROCNUM++)) {
 	msg 4 "   Calling process_parts $COMPRESSCMD $PROCNUM $COMPRESSEDPARTSTR $COMPRESSSUFFIX"
-	process_parts "$COMPRESSCMD" $PROCNUM "$COMPRESSEDPARTSTR" "$COMPRESSSUFFIX" &	######### NOTE: asyncronously!!! ######
+	process_parts "$COMPRESSCMD" $PROCNUM "$COMPRESSEDPARTSTR" "$COMPRESSSUFFIX" &	######### NOTE: asynchronously!!! ######
     }
-    wait		# Wait for all the asyncronous job(s) to finish
+    wait		# Wait for all the asynchronous job(s) to finish
 
     ### Caclculate the checksum on the source file
     msg 2 "   Starting checksum of source file [$ESCSRCFILE]"
@@ -253,10 +253,10 @@ function process_file {
 	# Call process_parts once per processor allocated
 	for ((PROCNUM=0; PROCNUM<NUMPROCS; PROCNUM++)) {
 	    msg 4 "   Calling process_parts $CHECKSUMCMD $PROCNUM $UNCOMPRESSEDPARTSTR $CHECKSUMSUFFIX"
-	    ### NOTE: asyncronously!!!
+	    ### NOTE: asynchronously!!!
 	    process_parts "$CHECKSUMCMD" $PROCNUM "$UNCOMPRESSEDPARTSTR" "$CHECKSUMSUFFIX" &
 	}
-	wait		# Wait for all the asyncronous job(s) to finish
+	wait		# Wait for all the asynchronous job(s) to finish
 
 
 	TMPFILE=${DESTINATIONDIR}tmp_$$
