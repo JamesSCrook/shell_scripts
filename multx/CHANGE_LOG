@@ -1,3 +1,9 @@
+v1.0.3 - Sat Dec  9 13:21:52 AEDT 2023
+    Made example host group names clearer - changed:
+    - $HOST_GROUP_1 "fred wilma"        to $HOST_GROUP_F # Flintstones
+    - $HOST_GROUP_2 "barney betty"      to $HOST_GROUP_R # Rubbles
+    - $HOST_GROUP_3 "pebbles bamm-bamm" to $HOST_GROUP_K # Kids
+
 v1.0.2 - Sun 02 Jan 2022 08:20:17 AEDT
 
     Cosmetic changes
@@ -18,4 +24,3 @@ v1.0.0 - Tue Apr  4 08:48:50 AEST 2017
 v0.0.0 - Mon May 30 20:34:16 AEST 2016
 
     Added the -o option
-

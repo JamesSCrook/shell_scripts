@@ -3,7 +3,7 @@
 ################################################################################
 # multx
 #
-# Copyright (c) 2016-2022, James S. Crook
+# Copyright (c) 2016-2023, James S. Crook
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,15 +40,14 @@
 # This script is a template. That is, it will almost certainly be more useful if
 # it's modified to suit your particular environment.
 ################################################################################
-# James S. Crook	2019/10/27
-################################################################################
-VERSION=1.0.2
+VERSION=1.0.3
 PROG=$(basename $0)
 
 ######### Define hostname group(s) and options
-HOST_GROUP_1="fred wilma"
-HOST_GROUP_2="barney betty"
-HOST_GROUP_3="pebbles bamm-bamm"
+HOST_GROUP_F="fred wilma"		# Flintstones
+HOST_GROUP_R="barney betty"		# Rubbles
+HOST_GROUP_K="pebbles bamm-bamm"	# Kids
+HOST_GROUP_a="$HOST_GROUP_F $HOST_GROUP_R $HOST_GROUP_K"
 
 CONFIRMFLAG=0
 BACKGROUNDFLAG=0
@@ -57,13 +56,13 @@ SSHARGS=""
 HOSTNAMES=""
 OUTFILEPAT=""
 
-OPTIONS="123abch:f:o:qs:x:"
+OPTIONS="FRKabch:f:o:qs:x:"
 while getopts "$OPTIONS" OPTION; do
     case $OPTION in
-	1) HOSTNAMES="$HOSTNAMES $HOST_GROUP_1";;
-	2) HOSTNAMES="$HOSTNAMES $HOST_GROUP_2";;
-	3) HOSTNAMES="$HOSTNAMES $HOST_GROUP_3";;
-	a) HOSTNAMES="$HOSTNAMES $HOST_GROUP_1 $HOST_GROUP_2 $HOST_GROUP_3";;
+	F) HOSTNAMES="$HOSTNAMES $HOST_GROUP_F";;
+	R) HOSTNAMES="$HOSTNAMES $HOST_GROUP_R";;
+	K) HOSTNAMES="$HOSTNAMES $HOST_GROUP_K";;
+	a) HOSTNAMES="$HOSTNAMES $HOST_GROUP_a";;
 	b) BACKGROUNDFLAG=1;;
 	c) CONFIRMFLAG=1;;
 	h) HOSTNAMES="$HOSTNAMES $OPTARG";;
@@ -86,10 +85,10 @@ if [ "$CMD" == "" ]; then
     echo "usage (version $VERSION):
 $PROG [option(s)] remote_command
   Where options are: $OPTIONS
-    -1			:+ hostnames: $HOST_GROUP_1
-    -2			:+ hostnames: $HOST_GROUP_2
-    -3			:+ hostnames: $HOST_GROUP_3
-    -a			:+ hostnames: $HOST_GROUP_1 $HOST_GROUP_2 $HOST_GROUP_3
+    -F			:+ hostnames: $HOST_GROUP_F
+    -R			:+ hostnames: $HOST_GROUP_R
+    -K			:+ hostnames: $HOST_GROUP_K
+    -a			:+ hostnames: $HOST_GROUP_a
     -b			:  background mode
     -c			:  confirmation mode
     -h host_list	:+ add a hostname or 'hostname_1 ... hostname_n'
@@ -99,7 +98,7 @@ $PROG [option(s)] remote_command
     -s ssh_arg(s)	:+ arguments to be passed to ssh
     -x ERE		:+ eXclude all/part of hostname(s) containing this ERE (pattern)
     '+' options may be used more than once and/or combined with others
-multx Copyright (C) 2016-2022 James S. Crook
+multx Copyright (C) 2016-2023 James S. Crook
 This program comes with ABSOLUTELY NO WARRANTY and is distributed under the FreeBSD license."
     exit
 fi
