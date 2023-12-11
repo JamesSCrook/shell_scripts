@@ -1,4 +1,15 @@
+v1.0.4 - Mon Dec 11 11:46:04 AEDT 2023
+
+    1. Added the '-l' option to execute commands on the initiating system (once per target host)
+    2. Changed $HOSTNAME/$H to $MULTXHOST/$MH
+    3. Confirmation now accepts 'y' or 'yes' - case insensitive
+    4. stdin and stdout are used for user input/output (not /dev/tty)
+    5. Added '[i:' ... ']'
+    6. Added an error ('E: ...') message and a warning ('W:...') message
+    7. Made variable names more descriptive
+
 v1.0.3 - Sat Dec  9 13:21:52 AEDT 2023
+
     Made example host group names clearer - changed:
     - $HOST_GROUP_1 "fred wilma"        to $HOST_GROUP_F # Flintstones
     - $HOST_GROUP_2 "barney betty"      to $HOST_GROUP_R # Rubbles
