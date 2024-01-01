@@ -1,3 +1,15 @@
+v1.1.0 - Mon 01 Jan 2024 12:07:13 AEDT
+
+    1. Set LOCALCOMMAND for for each of these 3 cases:
+       a) Call ssh on the local/initiating system that runs a command on each target host.
+          Send target's stdout and stderr to the local/initiating system's stdout & stderr.
+       b) Call ssh on the local/initiating system that runs a command on each target host.
+          Send target's stdout to a file on the local/initiating system. stderr as above.
+       c) Set LOCALCOMMAND to the command to be be run on the local/iniating system (RUNCOMMAND).
+    Then run LOCALCOMMAND either in the foreground or background (for each target host).
+    2. Allow comments is host files
+    3. Cosmetic changes
+
 v1.0.4 - Mon Dec 11 11:46:04 AEDT 2023
 
     1. Added the '-l' option to execute commands on the initiating system (once per target host)
