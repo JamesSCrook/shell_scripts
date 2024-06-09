@@ -1,9 +1,7 @@
-Sun 02 Jan 2022 08:13:22 AEDT
-
-As of Fedora 35, ssh-agent no longer has init (1) as its PPID
-The fear is that this may spead elsewhere, so the test for this was removed.
-
-
+v1.0.5 Sun Jun  9 14:03:39 AEST 2024
+    1. Syncronised start-ssh-agent and stop-ssh-agent version numbers (v1.0.5).
+    2. Removed the test for ssh-agent's PPID == 1 (it may not always be).
+    3. Hendle longer usernames, ssh-agent process started by other means and zombies.
 
 start-ssh-agent:
     v1.0.4	Removed the check for PPID == 1, and other minor tidying

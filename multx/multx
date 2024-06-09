@@ -40,7 +40,7 @@
 # This script is really meant to be used a template. That is, it will very
 # likely be more useful if it's modified to suit your particular environment.
 ################################################################################
-VERSION=1.1.0
+VERSION=1.2.0
 PROG=$(basename $0)
 
 ### Define initial/default values
@@ -51,6 +51,7 @@ LOCALEXECUTIONFLAG=0
 SSHARGS=" "		# single space means no ssh options (used for prettier output)
 TARGETHOSTS=""
 OUTPUTFILENAMETEMPLATE=""
+REMOTELOGINARGS=""
 
 ### Define hostname group(s) and options
 HOST_GROUP_F="fred wilma"		# Flintstones
@@ -58,7 +59,7 @@ HOST_GROUP_R="barney betty"		# Rubbles
 HOST_GROUP_K="pebbles bamm-bamm"	# Kids
 HOST_GROUP_a="$HOST_GROUP_F $HOST_GROUP_R $HOST_GROUP_K"
 
-OPTIONS="FRKabch:f:lo:qs:x:"
+OPTIONS="FRKabcf:h:il:o:qs:x:"
 
 ### Parse command line argument
 while getopts "$OPTIONS" OPTION; do
@@ -69,17 +70,18 @@ while getopts "$OPTIONS" OPTION; do
 	a) TARGETHOSTS="$TARGETHOSTS $HOST_GROUP_a";;
 	b) BACKGROUNDFLAG=1;;
 	c) USERCONFIRMATIONFLAG=1;;
-	h) TARGETHOSTS="$TARGETHOSTS $OPTARG";;
 	f)  if [ -r $OPTARG ]; then
 		TARGETHOSTS="$TARGETHOSTS $(grep -v '^#' $OPTARG)"
 	    else
 		echo "$PROG: cannot read file '$OPTARG'"
 	    fi;;
-	l) LOCALEXECUTIONFLAG=1;;
+	h) TARGETHOSTS="$TARGETHOSTS $OPTARG";;
+	i) LOCALEXECUTIONFLAG=1;;
+	l) REMOTELOGINARGS=" -l ${OPTARG}";;
 	o) OUTPUTFILENAMETEMPLATE="$OPTARG";;
 	q) QUIETFLAG=1;;
 	s) SSHARGS="${SSHARGS}$OPTARG ";;
-	x) TARGETHOSTS=$(echo "$TARGETHOSTS" | awk -v optarg="$OPTARG" '{gsub(optarg, ""); print $0}');;
+	x) TARGETHOSTS=$(echo "$TARGETHOSTS" | sed -E "s/$OPTARG//g");;
     esac
 done
 shift $((OPTIND-1))
@@ -97,14 +99,14 @@ $PROG [option(s)] remote_command
     -a			:+ hostnames: $HOST_GROUP_a
     -b			:  background mode
     -c			:  confirmation mode
-    -h host_list	:+ add a hostname or 'hostname_1 ... hostname_n'
     -f file		:+ read a file containing hostname(s)
-    -l                  :  execute the command on the local (initiating) host
-                           e.g.: multx -al 'scp /etc/hosts \${MULTXTARGET}:/tmp'
+    -h host_list	:+ add a hostname or 'hostname_1 ... hostname_n'
+    -i                  :  execute the command on the initiating (local) host, eg: multx -ai 'scp /etc/hosts \${MULTXTARGET}:/tmp'
+    -l username		:  specify the remote (login) username
     -o outfile_template	:  output file pattern (\"'\${MULTXTARGET}.info'\" is a useful choice)
     -q			:  quiet mode
     -s ssh_arg(s)	:+ arguments to be passed to ssh
-    -x ERE		:+ eXclude all/part of hostname(s) containing this ERE (pattern)
+    -x ERE		:+ eXclude all/part of hostname(s) containing this ERE (pattern) eg, -x patterh or -x \"\b\$(hostname)\b\"
     '+' options may be used more than once and/or combined with others
     Note: \$MT works the same as \$MULTXTARGET.
 multx Copyright (C) 2016-2024 James S. Crook
@@ -123,7 +125,7 @@ fi
 
 if [ $USERCONFIRMATIONFLAG -ne 0 ]; then
 						       # echo used to remove any extraneous whitespace(s)
-    printf "[q: Execute <ssh${SSHARGS}$RUNCOMMAND> on <$(echo $TARGETHOSTS)> (y/n)?]"
+    printf "[q: Execute <ssh${REMOTELOGINARGS}${SSHARGS}$RUNCOMMAND> on <$(echo $TARGETHOSTS)> (y/n)?]"
     read USERREPLY
     LOWERCASEUSERREPLY=$(echo $USERREPLY | tr A-Z a-z)
     case $LOWERCASEUSERREPLY in
@@ -154,11 +156,11 @@ if [ "$LOWERCASEUSERREPLY" == "y" ]; then
 	    # Cases a and b
 	    if [ "$OUTPUTFILENAMETEMPLATE" == "" ]; then
 		# Case a
-		LOCALCOMMAND="ssh${SSHARGS}$MULTXTARGET '$RUNCOMMAND'"
+		LOCALCOMMAND="ssh${REMOTELOGINARGS}${SSHARGS}$MULTXTARGET '$RUNCOMMAND'"
 	    else
 		# Case b
 		LOCALOUTPUTFILE=$(eval echo $OUTPUTFILENAMETEMPLATE)
-		LOCALCOMMAND="ssh${SSHARGS}$MULTXTARGET '$RUNCOMMAND' > '$LOCALOUTPUTFILE'"
+		LOCALCOMMAND="ssh${REMOTELOGINARGS}${SSHARGS}$MULTXTARGET '$RUNCOMMAND' > '$LOCALOUTPUTFILE'"
 	    fi
 	else
 	    # Case c

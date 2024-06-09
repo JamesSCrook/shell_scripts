@@ -1,3 +1,8 @@
+v1.2.0 - Sun Jun  9 09:36:48 AEST 2024
+    1. Changed -l (local) to -i (initiating) host.
+    2. Added -l <remote_username> option.
+    3. Allowed -x (exclude hostname pattern) to exclude exact word matches ('\b<pattern>\b')
+
 v1.1.0 - Mon 01 Jan 2024 12:07:13 AEDT
 
     1. Set LOCALCOMMAND for for each of these 3 cases:
