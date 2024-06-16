@@ -40,7 +40,7 @@
 # This script is really meant to be used a template. That is, it will very
 # likely be more useful if it's modified to suit your particular environment.
 ################################################################################
-VERSION=1.2.0
+VERSION=1.2.1
 PROG=$(basename $0)
 
 ### Define initial/default values
@@ -106,7 +106,7 @@ $PROG [option(s)] remote_command
     -o outfile_template	:  output file pattern (\"'\${MULTXTARGET}.info'\" is a useful choice)
     -q			:  quiet mode
     -s ssh_arg(s)	:+ arguments to be passed to ssh
-    -x ERE		:+ eXclude all/part of hostname(s) containing this ERE (pattern) eg, -x patterh or -x \"\b\$(hostname)\b\"
+    -x ERE		:+ eXclude all/part of hostname(s) containing this ERE (pattern) eg, -x pattern or -x \"\b\$(hostname)\b\"
     '+' options may be used more than once and/or combined with others
     Note: \$MT works the same as \$MULTXTARGET.
 multx Copyright (C) 2016-2024 James S. Crook
@@ -120,13 +120,17 @@ if [ "$TARGETHOSTS" == "" ]; then
 fi
 
 if [ $LOCALEXECUTIONFLAG -ne 0 -a \( "$OUTPUTFILENAMETEMPLATE" != "" -o "$SSHARGS" != " " \) ]; then
-    echo "[W: *** When '-l' is used, both the '-o' and '-s' options are ignored. ***]"
+    echo "[W: *** When '-i' is used, both the '-o' and '-s' options are ignored. ***]"
 fi
 
 if [ $USERCONFIRMATIONFLAG -ne 0 ]; then
 						       # echo used to remove any extraneous whitespace(s)
-    printf "[q: Execute <ssh${REMOTELOGINARGS}${SSHARGS}$RUNCOMMAND> on <$(echo $TARGETHOSTS)> (y/n)?]"
-    read USERREPLY
+    if [ $LOCALEXECUTIONFLAG -eq 0 ]; then
+	printf "[q: Execute <ssh${REMOTELOGINARGS}${SSHARGS}$RUNCOMMAND> on <$(echo $TARGETHOSTS)> (y/n)?]" > /dev/tty
+    else
+	printf "[q: Execute <${REMOTELOGINARGS}${SSHARGS}$RUNCOMMAND> for each of <$(echo $TARGETHOSTS)> (y/n)?]" > /dev/tty
+    fi
+    read USERREPLY < /dev/tty
     LOWERCASEUSERREPLY=$(echo $USERREPLY | tr A-Z a-z)
     case $LOWERCASEUSERREPLY in
 	y|yes)	LOWERCASEUSERREPLY="y";;
