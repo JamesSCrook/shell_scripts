@@ -1,0 +1,34 @@
+::: Active lines must start with an ABSOLUTE pathname(pattern) (/...) and contain at least one
+::: delimiter string and some findfiles_command (findfiles or find) arguments after the delimiter..
+::: The delimiter string is ":::" (3 colons in a row) at present.
+All lines (like this one) not formatted as above are ignored, as are blank lines.
+::: Lines starting with the delimiter (like this one) make good comments.
+
+/tmp/Prunefiles_Test_Dir/Dir_$2$Dollars		::: -f  -m 1Y -p     '\$.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_&2&Ampersands	::: -f  -m 1Y -p      '&.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks	::: -f  -m 1Y -p     '\*.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_\2\Backslashes	::: -f  -m 1Y -p     '\\.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_`2`Backticks	::: -f  -m 1Y -p      '`.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_!2!Bangs		::: -f  -m 1Y -p      '!.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_"2"DoubleQuotes	::: -f  -m 1Y -p      '".*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_>2>GreaterThans	::: -f  -m 1Y -p      '>.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_#2#Hashes		::: -f  -m 1Y -p      '#.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_{2{LBraces		::: -f  -m 1Y -p     '\{.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets	::: -f  -m 1Y -p     '\[.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_<2<LessThans	::: -f  -m 1Y -p      '<.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_(2(LParens		::: -f  -m 1Y -p     '\(.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_|2|Pipes		::: -f  -m 1Y -p     '\|.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_?2?Questions	::: -f  -m 1Y -p     '\?.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_}2}RBraces		::: -f  -m 1Y -p      '}.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets	::: -f  -m 1Y -p      '].*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_)2)RParens		::: -f  -m 1Y -p      ').*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_;2;Semicolons	::: -f  -m 1Y -p      ';.*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_'2'SingleQuotes	::: -f  -m 1Y -p      "'.*\.xlsx$"	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_ 2 Spaces		::: -f  -m 1Y -p      ' .*\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_	2	Tabs	::: -f  -m 1Y -p '	.*\.xlsx$'	::: OPTIONAL comment here
+
+/tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir::: -f  -m 1Y -p         '\.xlsx$'      ::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars	::: -f  -m 1Y -p         '\.xlsx$'	::: OPTIONAL comment here
+/tmp/Prunefiles_Test_Dir/Dir_No_Access		::: -f  -m 1Y -p         '\.xlsx$'	::: OPTIONAL comment here
+
+/tmp/Prunefiles_Test_Dir/Dir*			::: -fr -m 1Y -p         '\.xlsx$'	::: OPTIONAL comment here

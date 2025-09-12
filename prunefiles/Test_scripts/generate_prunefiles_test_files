@@ -1,0 +1,69 @@
+#!/bin/sh
+
+BASEDIR=/tmp/Prunefiles_Test_Dir
+sudo rm -rf $BASEDIR
+
+NOSPECIALCHARSDIR=$BASEDIR/Dir_No_Special_Chars
+mkdir -p $NOSPECIALCHARSDIR
+
+NOPERMISSIONSFILE=no_permissions.xlsx
+
+date > $BASEDIR/file_in_the_wrong_place.xlsx
+
+date > $NOSPECIALCHARSDIR/ordinary_name.xlsx
+date > $NOSPECIALCHARSDIR/$NOPERMISSIONSFILE
+date > $NOSPECIALCHARSDIR/'2_$dollars________$.xlsx'
+date > $NOSPECIALCHARSDIR/'2_&ampersands_____&.xlsx'
+date > $NOSPECIALCHARSDIR/'2_*asterixes______*.xlsx'
+date > $NOSPECIALCHARSDIR/'2_\backslashes____\.xlsx'
+date > $NOSPECIALCHARSDIR/'2`-backticks______`.xlsx'
+date > $NOSPECIALCHARSDIR/'2_!bangs__________!.xlsx'
+date > $NOSPECIALCHARSDIR/'2_"double_quotes__".xlsx'
+date > $NOSPECIALCHARSDIR/'2_>greater-thans__>.xlsx'
+date > $NOSPECIALCHARSDIR/'2_#hashes_________#.xlsx'
+date > $NOSPECIALCHARSDIR/'2_{left-braces____{.xlsx'
+date > $NOSPECIALCHARSDIR/'2_[left-brackets__[.xlsx'
+date > $NOSPECIALCHARSDIR/'2_(left-parens____(.xlsx'
+date > $NOSPECIALCHARSDIR/'2_<less-thans_____<.xlsx'
+date > $NOSPECIALCHARSDIR/'2_|pipes__________|.xlsx'
+date > $NOSPECIALCHARSDIR/'2_?questions______?.xlsx'
+date > $NOSPECIALCHARSDIR/'2_}right-braces___}.xlsx'
+date > $NOSPECIALCHARSDIR/'2_]right-brackets_].xlsx'
+date > $NOSPECIALCHARSDIR/'2_)right-parens___).xlsx'
+date > $NOSPECIALCHARSDIR/'2_;semi-colons____;.xlsx'
+date > $NOSPECIALCHARSDIR/"2_'single_quotes__'.xlsx"
+date > $NOSPECIALCHARSDIR/'2_ spaces_________ .xlsx'
+date > $NOSPECIALCHARSDIR/'2_	tabs	.xlsx'
+date > $NOSPECIALCHARSDIR/'C:\Windows Style File.xlsx'
+touch -t 202001011200 $NOSPECIALCHARSDIR/*
+
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_$2$Dollars'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_&2&Ampersands'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_*2*Asterisks'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_\2\Backslashes'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_`2`Backticks'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_!2!Bangs'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_"2"DoubleQuotes'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_>2>GreaterThans'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_#2#Hashes'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_{2{LBraces'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_[2[LBrackets'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_<2<LessThans'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_(2(LParens'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_|2|Pipes'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_?2?Questions'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_}2}RBraces'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_]2]RBrackets'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_)2)RParens'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_;2;Semicolons'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/"Dir_'2'SingleQuotes"
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_ 2 Spaces'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_	2	Tabs'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_No_Access'
+cp -pr $NOSPECIALCHARSDIR $BASEDIR/'Dir_D:\Windows Type Dir'
+
+chmod 000 $BASEDIR/*/$NOPERMISSIONSFILE
+
+sudo chmod 000 $BASEDIR/'Dir_No_Access'
+
+exit 0

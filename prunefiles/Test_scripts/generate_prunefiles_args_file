@@ -1,0 +1,46 @@
+#!/bin/sh
+
+PROG=$(basename $0)
+FINDFILES=/usr/local/bin/findfiles
+SUFFIX_REGEXP='\.csv$|\.txt$|\.xls$|\.xlsx$|\.xml$'
+FINDFILES_MODTIME='1Y'
+DELIMITER=:::
+
+function displayUsageMessage {
+    echo "usage: $PROG [-h] [-m mod_time] [-s <suffix_regular_expression>] pathname [...]"
+}
+
+OPTIONS='hm:s:'
+while getopts "$OPTIONS" OPTION; do
+    case $OPTION in
+	h) displayUsageMessage;;
+	m) FINDFILES_MODTIME="$OPTARG";;
+	s) SUFFIX_REGEXP="$OPTARG";;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ $# -lt 1 ]; then
+    displayUsageMessage
+    exit 1
+fi
+
+echo "SUFFIX_REGEXP=[$SUFFIX_REGEXP], FINDFILES_MODTIME=[$FINDFILES_MODTIME]"
+
+$FINDFILES -frN -m "$FINDFILES_MODTIME" -p "$SUFFIX_REGEXP" $* | while read PATHNAME; do
+    BASENAME=$(basename "$PATHNAME")
+    DIRNAME=$(dirname "$PATHNAME")
+    # echo "[$PATHNAME] : [$DIRNAME] : [$BASENAME]"
+    SUFFIX=$(echo "$BASENAME" | sed 's/^.*\(.*\)\./.\1/')
+    printf "%-63s -f  -m   1Y -ip '\%s$'" "$DIRNAME" "$SUFFIX"
+
+    # if $DIRNAME contains any "special" character(s) (space, single quote, double quote)
+    echo "$DIRNAME" | grep -E '[ "'\'']' > /dev/null
+    if [ $? -eq 0 ]; then
+	echo " $DELIMITER ATTENTION: special character!"
+    else
+	echo
+    fi
+done | sort -fu
+
+exit 0

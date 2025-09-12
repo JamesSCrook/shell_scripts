@@ -1,0 +1,8 @@
+v2.0.0 - Fri 12 Sep 2025 13:46:14 AEST
+    Initial git version
+    Note: the reason for starting with 2.0.0 is because prunefiles has been used for many years, but
+    with much less capability. The basic concept was the same, but:
+    - The use of findfiles was mandatory (using find was not allowed)
+    - There was no DELIMITER_STRING (the first argument had to be directory [pattern] without whitespace)
+    - Directory and file names with (many) special characters were not supported.
+    Therefore, findfiles v2.0.0 was born.
