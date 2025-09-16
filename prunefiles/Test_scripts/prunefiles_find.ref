@@ -1,265 +1,270 @@
-[0]   ===================== Fri 12 Sep 2025 12:59:07 AEST =====================
-[0]   === jc: Starting prunefiles prunefiles_args_find ===
-[0]   === running as user: jc ===
-[0]   === -rw-r--r--. 1 jc jc 3212 Sep 12 10:46 prunefiles_args_find : cksum: 730079936 3212 ===
-[5]   ============================================================================================
-[5]   vvvvvvvvvvv SANITISED_ARGS_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_$2$Dollars:::-mtime +365 -name        '*$*.xlsx']
-      (2) [/tmp/Prunefiles_Test_Dir/Dir_&2&Ampersands:::-mtime +365 -name        '*&*.xlsx']
-      (3) [/tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks:::-mtime +365 -name       '*\**.xlsx']
-      (4) [/tmp/Prunefiles_Test_Dir/Dir_\2\Backslashes:::-mtime +365 -name       '*\\*.xlsx']
-      (5) [/tmp/Prunefiles_Test_Dir/Dir_`2`Backticks:::-mtime +365 -name        '*`*.xlsx']
-      (6) [/tmp/Prunefiles_Test_Dir/Dir_!2!Bangs:::-mtime +365 -name        '*!*.xlsx']
-      (7) [/tmp/Prunefiles_Test_Dir/Dir_"2"DoubleQuotes:::-mtime +365 -name        '*"*.xlsx']
-      (8) [/tmp/Prunefiles_Test_Dir/Dir_>2>GreaterThans:::-mtime +365 -name        '*>*.xlsx']
-      (9) [/tmp/Prunefiles_Test_Dir/Dir_#2#Hashes:::-mtime +365 -name        '*#*.xlsx']
-      (10) [/tmp/Prunefiles_Test_Dir/Dir_{2{LBraces:::-mtime +365 -name        '*{*.xlsx']
-      (11) [/tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets:::-mtime +365 -name        '*[*.xlsx']
-      (12) [/tmp/Prunefiles_Test_Dir/Dir_<2<LessThans:::-mtime +365 -name        '*<*.xlsx']
-      (13) [/tmp/Prunefiles_Test_Dir/Dir_(2(LParens:::-mtime +365 -name        '*(*.xlsx']
-      (14) [/tmp/Prunefiles_Test_Dir/Dir_|2|Pipes:::-mtime +365 -name        '*|*.xlsx']
-      (15) [/tmp/Prunefiles_Test_Dir/Dir_?2?Questions:::-mtime +365 -name       '*\?*.xlsx']
-      (16) [/tmp/Prunefiles_Test_Dir/Dir_}2}RBraces:::-mtime +365 -name        '*}*.xlsx']
-      (17) [/tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets:::-mtime +365 -name        '*]*.xlsx']
-      (18) [/tmp/Prunefiles_Test_Dir/Dir_)2)RParens:::-mtime +365 -name        '*)*.xlsx']
-      (19) [/tmp/Prunefiles_Test_Dir/Dir_;2;Semicolons:::-mtime +365 -name        '*;*.xlsx']
-      (20) [/tmp/Prunefiles_Test_Dir/Dir_'2'SingleQuotes:::-mtime +365 -name        "*'*.xlsx"]
-      (21) [/tmp/Prunefiles_Test_Dir/Dir_ 2 Spaces:::-mtime +365 -name        '* *.xlsx']
-      (22) [/tmp/Prunefiles_Test_Dir/Dir_	2	Tabs:::-mtime +365 -name '*	*.xlsx']
-      (23) [/tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir:::-mtime +365 -name          '*.xlsx']
-      (24) [/tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars:::-mtime +365 -name          '*.xlsx']
-      (25) [/tmp/Prunefiles_Test_Dir/Dir_No_Access:::-mtime +365 -name          '*.xlsx']
-      (26) [/tmp/Prunefiles_Test_Dir/Dir*:::-mtime +365 -name          '*.xlsx']
-[5]   ^^^^^^^^^^^ SANITISED_ARGS_PATHNAME file contents above here ^^^^^^^^^^^^
-[5]   ============================================================================================
+[0] ===================== Mon 15 Sep 2025 12:15:43 AEST =====================
+[0] === hostname: jc. Starting prunefiles prunefiles_args_find ===
+[0] === running as user: jc ===
+
+[0]  ***************************************************************************************
+[0]  ****************** Processing args file 'prunefiles_args_find' *******************
+[0]  ***************************************************************************************
+[0]    === details: -rw-r--r--. 1 jc jc 3212 Sep 12 10:46 prunefiles_args_find
+[0]    === cksum: 730079936 3212 prunefiles_args_find ===
+[5]    ===================================================================
+[5]    vvvvvvvvvvv    SANITISED_ARGS_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_$2$Dollars:::-mtime +365 -name        '*$*.xlsx']
+       (2) [/tmp/Prunefiles_Test_Dir/Dir_&2&Ampersands:::-mtime +365 -name        '*&*.xlsx']
+       (3) [/tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks:::-mtime +365 -name       '*\**.xlsx']
+       (4) [/tmp/Prunefiles_Test_Dir/Dir_\2\Backslashes:::-mtime +365 -name       '*\\*.xlsx']
+       (5) [/tmp/Prunefiles_Test_Dir/Dir_`2`Backticks:::-mtime +365 -name        '*`*.xlsx']
+       (6) [/tmp/Prunefiles_Test_Dir/Dir_!2!Bangs:::-mtime +365 -name        '*!*.xlsx']
+       (7) [/tmp/Prunefiles_Test_Dir/Dir_"2"DoubleQuotes:::-mtime +365 -name        '*"*.xlsx']
+       (8) [/tmp/Prunefiles_Test_Dir/Dir_>2>GreaterThans:::-mtime +365 -name        '*>*.xlsx']
+       (9) [/tmp/Prunefiles_Test_Dir/Dir_#2#Hashes:::-mtime +365 -name        '*#*.xlsx']
+       (10) [/tmp/Prunefiles_Test_Dir/Dir_{2{LBraces:::-mtime +365 -name        '*{*.xlsx']
+       (11) [/tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets:::-mtime +365 -name        '*[*.xlsx']
+       (12) [/tmp/Prunefiles_Test_Dir/Dir_<2<LessThans:::-mtime +365 -name        '*<*.xlsx']
+       (13) [/tmp/Prunefiles_Test_Dir/Dir_(2(LParens:::-mtime +365 -name        '*(*.xlsx']
+       (14) [/tmp/Prunefiles_Test_Dir/Dir_|2|Pipes:::-mtime +365 -name        '*|*.xlsx']
+       (15) [/tmp/Prunefiles_Test_Dir/Dir_?2?Questions:::-mtime +365 -name       '*\?*.xlsx']
+       (16) [/tmp/Prunefiles_Test_Dir/Dir_}2}RBraces:::-mtime +365 -name        '*}*.xlsx']
+       (17) [/tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets:::-mtime +365 -name        '*]*.xlsx']
+       (18) [/tmp/Prunefiles_Test_Dir/Dir_)2)RParens:::-mtime +365 -name        '*)*.xlsx']
+       (19) [/tmp/Prunefiles_Test_Dir/Dir_;2;Semicolons:::-mtime +365 -name        '*;*.xlsx']
+       (20) [/tmp/Prunefiles_Test_Dir/Dir_'2'SingleQuotes:::-mtime +365 -name        "*'*.xlsx"]
+       (21) [/tmp/Prunefiles_Test_Dir/Dir_ 2 Spaces:::-mtime +365 -name        '* *.xlsx']
+       (22) [/tmp/Prunefiles_Test_Dir/Dir_	2	Tabs:::-mtime +365 -name '*	*.xlsx']
+       (23) [/tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir:::-mtime +365 -name          '*.xlsx']
+       (24) [/tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars:::-mtime +365 -name          '*.xlsx']
+       (25) [/tmp/Prunefiles_Test_Dir/Dir_No_Access:::-mtime +365 -name          '*.xlsx']
+       (26) [/tmp/Prunefiles_Test_Dir/Dir*:::-mtime +365 -name          '*.xlsx']
+[5]    ^^^^^^^^^^^    SANITISED_ARGS_PATHNAME file contents above here ^^^^^^^^^^^^
+[5]    ===================================================================
 [5] 
-[4]   Sanitized input line #1: [/tmp/Prunefiles_Test_Dir/Dir_$2$Dollars:::-mtime +365 -name        '*$*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\$2\$Dollars -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_$2$Dollars]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #1: [/tmp/Prunefiles_Test_Dir/Dir_$2$Dollars:::-mtime +365 -name        '*$*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\$2\$Dollars -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_$2$Dollars]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_$2$Dollars' -mtime +365 -name        '*$*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_$2$Dollars/2_$dollars________$.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #2: [/tmp/Prunefiles_Test_Dir/Dir_&2&Ampersands:::-mtime +365 -name        '*&*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\&2\&Ampersands -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_&2&Ampersands]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #2: [/tmp/Prunefiles_Test_Dir/Dir_&2&Ampersands:::-mtime +365 -name        '*&*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\&2\&Ampersands -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_&2&Ampersands]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_&2&Ampersands' -mtime +365 -name        '*&*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_&2&Ampersands/2_&ampersands_____&.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #3: [/tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks:::-mtime +365 -name       '*\**.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #3: [/tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks:::-mtime +365 -name       '*\**.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks' -mtime +365 -name       '*\**.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks/2_*asterixes______*.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #4: [/tmp/Prunefiles_Test_Dir/Dir_\2\Backslashes:::-mtime +365 -name       '*\\*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\\2\\Backslashes -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_\2\Backslashes]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #4: [/tmp/Prunefiles_Test_Dir/Dir_\2\Backslashes:::-mtime +365 -name       '*\\*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\\2\\Backslashes -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_\2\Backslashes]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_\2\Backslashes' -mtime +365 -name       '*\\*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 2
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_\2\Backslashes/2_\backslashes____\.xlsx - dry run, file NOT removed
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_\2\Backslashes/C:\Windows Style File.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #5: [/tmp/Prunefiles_Test_Dir/Dir_`2`Backticks:::-mtime +365 -name        '*`*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\`2\`Backticks -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_`2`Backticks]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #5: [/tmp/Prunefiles_Test_Dir/Dir_`2`Backticks:::-mtime +365 -name        '*`*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\`2\`Backticks -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_`2`Backticks]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_`2`Backticks' -mtime +365 -name        '*`*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_`2`Backticks/2`-backticks______`.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #6: [/tmp/Prunefiles_Test_Dir/Dir_!2!Bangs:::-mtime +365 -name        '*!*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_!2!Bangs -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_!2!Bangs]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #6: [/tmp/Prunefiles_Test_Dir/Dir_!2!Bangs:::-mtime +365 -name        '*!*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_!2!Bangs -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_!2!Bangs]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_!2!Bangs' -mtime +365 -name        '*!*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_!2!Bangs/2_!bangs__________!.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #7: [/tmp/Prunefiles_Test_Dir/Dir_"2"DoubleQuotes:::-mtime +365 -name        '*"*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\"2\"DoubleQuotes -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_"2"DoubleQuotes]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #7: [/tmp/Prunefiles_Test_Dir/Dir_"2"DoubleQuotes:::-mtime +365 -name        '*"*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\"2\"DoubleQuotes -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_"2"DoubleQuotes]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_"2"DoubleQuotes' -mtime +365 -name        '*"*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_"2"DoubleQuotes/2_"double_quotes__".xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #8: [/tmp/Prunefiles_Test_Dir/Dir_>2>GreaterThans:::-mtime +365 -name        '*>*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\>2\>GreaterThans -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_>2>GreaterThans]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #8: [/tmp/Prunefiles_Test_Dir/Dir_>2>GreaterThans:::-mtime +365 -name        '*>*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\>2\>GreaterThans -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_>2>GreaterThans]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_>2>GreaterThans' -mtime +365 -name        '*>*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_>2>GreaterThans/2_>greater-thans__>.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #9: [/tmp/Prunefiles_Test_Dir/Dir_#2#Hashes:::-mtime +365 -name        '*#*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_#2#Hashes -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_#2#Hashes]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #9: [/tmp/Prunefiles_Test_Dir/Dir_#2#Hashes:::-mtime +365 -name        '*#*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_#2#Hashes -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_#2#Hashes]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_#2#Hashes' -mtime +365 -name        '*#*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_#2#Hashes/2_#hashes_________#.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #10: [/tmp/Prunefiles_Test_Dir/Dir_{2{LBraces:::-mtime +365 -name        '*{*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_{2{LBraces -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_{2{LBraces]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #10: [/tmp/Prunefiles_Test_Dir/Dir_{2{LBraces:::-mtime +365 -name        '*{*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_{2{LBraces -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_{2{LBraces]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_{2{LBraces' -mtime +365 -name        '*{*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_{2{LBraces/2_{left-braces____{.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #11: [/tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets:::-mtime +365 -name        '*[*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #11: [/tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets:::-mtime +365 -name        '*[*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets' -mtime +365 -name        '*[*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets/2_[left-brackets__[.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #12: [/tmp/Prunefiles_Test_Dir/Dir_<2<LessThans:::-mtime +365 -name        '*<*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\<2\<LessThans -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_<2<LessThans]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #12: [/tmp/Prunefiles_Test_Dir/Dir_<2<LessThans:::-mtime +365 -name        '*<*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\<2\<LessThans -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_<2<LessThans]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_<2<LessThans' -mtime +365 -name        '*<*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_<2<LessThans/2_<less-thans_____<.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #13: [/tmp/Prunefiles_Test_Dir/Dir_(2(LParens:::-mtime +365 -name        '*(*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\(2\(LParens -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_(2(LParens]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #13: [/tmp/Prunefiles_Test_Dir/Dir_(2(LParens:::-mtime +365 -name        '*(*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\(2\(LParens -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_(2(LParens]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_(2(LParens' -mtime +365 -name        '*(*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_(2(LParens/2_(left-parens____(.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #14: [/tmp/Prunefiles_Test_Dir/Dir_|2|Pipes:::-mtime +365 -name        '*|*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\|2\|Pipes -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_|2|Pipes]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #14: [/tmp/Prunefiles_Test_Dir/Dir_|2|Pipes:::-mtime +365 -name        '*|*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\|2\|Pipes -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_|2|Pipes]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_|2|Pipes' -mtime +365 -name        '*|*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_|2|Pipes/2_|pipes__________|.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #15: [/tmp/Prunefiles_Test_Dir/Dir_?2?Questions:::-mtime +365 -name       '*\?*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_?2?Questions -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_?2?Questions]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #15: [/tmp/Prunefiles_Test_Dir/Dir_?2?Questions:::-mtime +365 -name       '*\?*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_?2?Questions -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_?2?Questions]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_?2?Questions' -mtime +365 -name       '*\?*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_?2?Questions/2_?questions______?.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #16: [/tmp/Prunefiles_Test_Dir/Dir_}2}RBraces:::-mtime +365 -name        '*}*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_}2}RBraces -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_}2}RBraces]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #16: [/tmp/Prunefiles_Test_Dir/Dir_}2}RBraces:::-mtime +365 -name        '*}*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_}2}RBraces -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_}2}RBraces]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_}2}RBraces' -mtime +365 -name        '*}*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_}2}RBraces/2_}right-braces___}.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #17: [/tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets:::-mtime +365 -name        '*]*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #17: [/tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets:::-mtime +365 -name        '*]*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets' -mtime +365 -name        '*]*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets/2_]right-brackets_].xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #18: [/tmp/Prunefiles_Test_Dir/Dir_)2)RParens:::-mtime +365 -name        '*)*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\)2\)RParens -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_)2)RParens]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #18: [/tmp/Prunefiles_Test_Dir/Dir_)2)RParens:::-mtime +365 -name        '*)*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\)2\)RParens -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_)2)RParens]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_)2)RParens' -mtime +365 -name        '*)*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_)2)RParens/2_)right-parens___).xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #19: [/tmp/Prunefiles_Test_Dir/Dir_;2;Semicolons:::-mtime +365 -name        '*;*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\;2\;Semicolons -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_;2;Semicolons]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #19: [/tmp/Prunefiles_Test_Dir/Dir_;2;Semicolons:::-mtime +365 -name        '*;*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\;2\;Semicolons -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_;2;Semicolons]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_;2;Semicolons' -mtime +365 -name        '*;*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_;2;Semicolons/2_;semi-colons____;.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #20: [/tmp/Prunefiles_Test_Dir/Dir_'2'SingleQuotes:::-mtime +365 -name        "*'*.xlsx"]
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\'2\'SingleQuotes -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_'2'SingleQuotes]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #20: [/tmp/Prunefiles_Test_Dir/Dir_'2'SingleQuotes:::-mtime +365 -name        "*'*.xlsx"]
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\'2\'SingleQuotes -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_'2'SingleQuotes]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_'\''2'\''SingleQuotes' -mtime +365 -name        "*'*.xlsx" -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_'2'SingleQuotes/2_'single_quotes__'.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #21: [/tmp/Prunefiles_Test_Dir/Dir_ 2 Spaces:::-mtime +365 -name        '* *.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\ 2\ Spaces -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_ 2 Spaces]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #21: [/tmp/Prunefiles_Test_Dir/Dir_ 2 Spaces:::-mtime +365 -name        '* *.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\ 2\ Spaces -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_ 2 Spaces]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_ 2 Spaces' -mtime +365 -name        '* *.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 2
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_ 2 Spaces/2_ spaces_________ .xlsx - dry run, file NOT removed
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_ 2 Spaces/C:\Windows Style File.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #22: [/tmp/Prunefiles_Test_Dir/Dir_	2	Tabs:::-mtime +365 -name '*	*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\	2\	Tabs -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_	2	Tabs]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #22: [/tmp/Prunefiles_Test_Dir/Dir_	2	Tabs:::-mtime +365 -name '*	*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_\	2\	Tabs -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_	2	Tabs]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_	2	Tabs' -mtime +365 -name '*	*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 1
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_	2	Tabs/2_	tabs	.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #23: [/tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir:::-mtime +365 -name          '*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_D:\\Windows\ Type\ Dir -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #23: [/tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir:::-mtime +365 -name          '*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_D:\\Windows\ Type\ Dir -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir' -mtime +365 -name          '*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 25
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir/2_$dollars________$.xlsx - dry run, file NOT removed
@@ -289,11 +294,11 @@
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir/ordinary_name.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #24: [/tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars:::-mtime +365 -name          '*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #24: [/tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars:::-mtime +365 -name          '*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars' -mtime +365 -name          '*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 25
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars/2_$dollars________$.xlsx - dry run, file NOT removed
@@ -323,43 +328,43 @@
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars/ordinary_name.xlsx - dry run, file NOT removed
 
 
-[4]   Sanitized input line #25: [/tmp/Prunefiles_Test_Dir/Dir_No_Access:::-mtime +365 -name          '*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_No_Access -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_No_Access]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
-[0] E:  (1) '/tmp/Prunefiles_Test_Dir/Dir_No_Access' is not a readable/searchable directory' ***
+[3]    Sanitized input line #25: [/tmp/Prunefiles_Test_Dir/Dir_No_Access:::-mtime +365 -name          '*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir_No_Access -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_No_Access]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[0] E: (1) '/tmp/Prunefiles_Test_Dir/Dir_No_Access' is not a readable/searchable directory' ***
 
 
-[4]   Sanitized input line #26: [/tmp/Prunefiles_Test_Dir/Dir*:::-mtime +365 -name          '*.xlsx']
-[3]   FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir* -maxdepth 0 -type d]
-[5]   vvvvvvvvvvv Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
-      (1) [/tmp/Prunefiles_Test_Dir/Dir_$2$Dollars]
-      (2) [/tmp/Prunefiles_Test_Dir/Dir_&2&Ampersands]
-      (3) [/tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks]
-      (4) [/tmp/Prunefiles_Test_Dir/Dir_\2\Backslashes]
-      (5) [/tmp/Prunefiles_Test_Dir/Dir_`2`Backticks]
-      (6) [/tmp/Prunefiles_Test_Dir/Dir_!2!Bangs]
-      (7) [/tmp/Prunefiles_Test_Dir/Dir_"2"DoubleQuotes]
-      (8) [/tmp/Prunefiles_Test_Dir/Dir_>2>GreaterThans]
-      (9) [/tmp/Prunefiles_Test_Dir/Dir_#2#Hashes]
-      (10) [/tmp/Prunefiles_Test_Dir/Dir_{2{LBraces]
-      (11) [/tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets]
-      (12) [/tmp/Prunefiles_Test_Dir/Dir_<2<LessThans]
-      (13) [/tmp/Prunefiles_Test_Dir/Dir_(2(LParens]
-      (14) [/tmp/Prunefiles_Test_Dir/Dir_|2|Pipes]
-      (15) [/tmp/Prunefiles_Test_Dir/Dir_?2?Questions]
-      (16) [/tmp/Prunefiles_Test_Dir/Dir_}2}RBraces]
-      (17) [/tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets]
-      (18) [/tmp/Prunefiles_Test_Dir/Dir_)2)RParens]
-      (19) [/tmp/Prunefiles_Test_Dir/Dir_;2;Semicolons]
-      (20) [/tmp/Prunefiles_Test_Dir/Dir_'2'SingleQuotes]
-      (21) [/tmp/Prunefiles_Test_Dir/Dir_ 2 Spaces]
-      (22) [/tmp/Prunefiles_Test_Dir/Dir_	2	Tabs]
-      (23) [/tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir]
-      (24) [/tmp/Prunefiles_Test_Dir/Dir_No_Access]
-      (25) [/tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars]
-[5]   ^^^^^^^^^^^ Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
+[3]    Sanitized input line #26: [/tmp/Prunefiles_Test_Dir/Dir*:::-mtime +365 -name          '*.xlsx']
+[3]    FIND_DIRECTORIES_COMMAND=[find /tmp/Prunefiles_Test_Dir/Dir* -maxdepth 0 -type d]
+[5]    vvvvvvvvvvv    Expanded DIRECTORYNAMES_PATHNAME file contents below here vvvvvvvvvvvvv
+       (1) [/tmp/Prunefiles_Test_Dir/Dir_$2$Dollars]
+       (2) [/tmp/Prunefiles_Test_Dir/Dir_&2&Ampersands]
+       (3) [/tmp/Prunefiles_Test_Dir/Dir_*2*Asterisks]
+       (4) [/tmp/Prunefiles_Test_Dir/Dir_\2\Backslashes]
+       (5) [/tmp/Prunefiles_Test_Dir/Dir_`2`Backticks]
+       (6) [/tmp/Prunefiles_Test_Dir/Dir_!2!Bangs]
+       (7) [/tmp/Prunefiles_Test_Dir/Dir_"2"DoubleQuotes]
+       (8) [/tmp/Prunefiles_Test_Dir/Dir_>2>GreaterThans]
+       (9) [/tmp/Prunefiles_Test_Dir/Dir_#2#Hashes]
+       (10) [/tmp/Prunefiles_Test_Dir/Dir_{2{LBraces]
+       (11) [/tmp/Prunefiles_Test_Dir/Dir_[2[LBrackets]
+       (12) [/tmp/Prunefiles_Test_Dir/Dir_<2<LessThans]
+       (13) [/tmp/Prunefiles_Test_Dir/Dir_(2(LParens]
+       (14) [/tmp/Prunefiles_Test_Dir/Dir_|2|Pipes]
+       (15) [/tmp/Prunefiles_Test_Dir/Dir_?2?Questions]
+       (16) [/tmp/Prunefiles_Test_Dir/Dir_}2}RBraces]
+       (17) [/tmp/Prunefiles_Test_Dir/Dir_]2]RBrackets]
+       (18) [/tmp/Prunefiles_Test_Dir/Dir_)2)RParens]
+       (19) [/tmp/Prunefiles_Test_Dir/Dir_;2;Semicolons]
+       (20) [/tmp/Prunefiles_Test_Dir/Dir_'2'SingleQuotes]
+       (21) [/tmp/Prunefiles_Test_Dir/Dir_ 2 Spaces]
+       (22) [/tmp/Prunefiles_Test_Dir/Dir_	2	Tabs]
+       (23) [/tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir]
+       (24) [/tmp/Prunefiles_Test_Dir/Dir_No_Access]
+       (25) [/tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars]
+[5]    ^^^^^^^^^^^    Expanded DIRECTORYNAMES_PATHNAME file contents above here ^^^^^^^^^^^^
 [2]     (1) [find '/tmp/Prunefiles_Test_Dir/Dir_$2$Dollars' -mtime +365 -name          '*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 25
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_$2$Dollars/2_$dollars________$.xlsx - dry run, file NOT removed
@@ -981,7 +986,7 @@
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir/C:\Windows Style File.xlsx - dry run, file NOT removed
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir/no_permissions.xlsx - dry run, file NOT removed
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_D:\Windows Type Dir/ordinary_name.xlsx - dry run, file NOT removed
-[0] E:  (24) '/tmp/Prunefiles_Test_Dir/Dir_No_Access' is not a readable/searchable directory' ***
+[0] E: (24) '/tmp/Prunefiles_Test_Dir/Dir_No_Access' is not a readable/searchable directory' ***
 [2]     (25) [find '/tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars' -mtime +365 -name          '*.xlsx' -maxdepth 1 -type f]
 [3]     Number of files to delete from this directory: 25
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars/2_$dollars________$.xlsx - dry run, file NOT removed
@@ -1011,4 +1016,4 @@
 [1]       f rm /tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars/ordinary_name.xlsx - dry run, file NOT removed
 
 
-[0]   ===================== Fri 12 Sep 2025 12:59:08 AEST =====================
+[0]    ===================== Mon 15 Sep 2025 12:15:44 AEST =====================

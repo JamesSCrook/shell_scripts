@@ -1,3 +1,10 @@
+v2.1.0 - 
+    1. Allow multiple prunefiles_args_pathnames (now one or more).
+    2. If logging to an existing file, append to it (no longer delete it).
+    3. Split test file prunefiles_args_findfiles into multiple files to trigger various error messages.
+    4. Changed indenting of (log) output.
+    5. Updated the reference (.ref) files to reflect these changes.
+
 v2.0.0 - Fri 12 Sep 2025 13:46:14 AEST
     Initial git version
     Note: the reason for starting with 2.0.0 is because prunefiles has been used for many years, but

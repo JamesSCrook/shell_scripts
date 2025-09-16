@@ -31,4 +31,4 @@ All lines (like this one) not formatted as above are ignored, as are blank lines
 /tmp/Prunefiles_Test_Dir/Dir_No_Special_Chars	::: -f  -m 1Y -p         '\.xlsx$'	::: OPTIONAL comment here
 /tmp/Prunefiles_Test_Dir/Dir_No_Access		::: -f  -m 1Y -p         '\.xlsx$'	::: OPTIONAL comment here
 
-/tmp/Prunefiles_Test_Dir/Dir*			::: -fr -m 1Y -p         '\.xlsx$'	::: OPTIONAL comment here
+#/tmp/Prunefiles_Test_Dir/Dir*			::: -fr -m 1Y -p         '\.xlsx$'	::: OPTIONAL comment here

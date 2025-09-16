@@ -33,7 +33,7 @@
 ################################################################################
 ################################################################################
 # prunefiles removes ("prunes") files from directories when conditions specified
-# in  its  PRUNEFILES_ARGUMENTS_PATHNAME configuration file are met.  prunefiles
+# in its PRUNEFILES_ARGUMENTS_PATHNAME configuration file(s) are met. prunefiles
 # is meant to be used to cleanup after software, applications, etc., that  don't
 # clean  up after themselves. In some cases, applications leave files that would
 # accumulate forever, so they must be deleted some other  way. prunefiles can do
@@ -43,9 +43,9 @@
 # files with a particular naming convention - often, after they  have  not  been
 # modified for a specified time.
 
-# This is what prunefiles does:
-# 1. prunefiles reads PRUNEFILES_ARGUMENTS_PATHNAME and everything that is not required
-#    is ignored. This "sanitized" information is saved in file SANITIZED_ARGS_PATHNAME.
+# prunefiles processes one or more PRUNEFILES_ARGUMENTS_PATHNAME file(s), one at a time.
+# 1. PRUNEFILES_ARGUMENTS_PATHNAME lies are read. Everything that is not required is ignored.
+# #  This "sanitized" information is saved in file SANITIZED_ARGS_PATHNAME.
 # 2. Valid  PRUNEFILES_ARGUMENTS_PATHNAME lines are in the format:
 #    <absolute_pathname_pattern>[<ws>]<DELIMITER_STRING>[<ws>]<find_files_command_args>[<ws><DELIMITER_STRING><ignored_text>]
 #    An <absolute_pathname_pattern> may be a constant (/var/log/journal) or a pattern (/var/log/j*).
@@ -69,7 +69,7 @@
 #      Example PRUNEFILES_ARGUMENTS_PATHNAME line - uses regular expression(s):
 #      /tmp/my_program/* ::: -f -m 1Y -p '\.xlsx$' ::: OPTIONAL comment here
 #      findfiles is the default.
-#  ii) find (ideally, GNU find):
+#  ii) find:
 #      Example PRUNEFILES_ARGUMENTS_PATHNAME line - uses "patterns":
 #      /tmp/my_program/* ::: -type f -mtime +365 -name '*.xlsx' ::: OPTIONAL comment here
 #    Both examples above remove *.xlsx files in /tmp/myprogram/* directories that are >1 year old.
@@ -79,8 +79,9 @@
 # C. 'read -r' is used so backslashes are read without modification.
 #
 ################################################################################
+################################################################################
 PROG=$(basename $0)
-PROG_VERSION=2.0.0
+PROG_VERSION=2.1.0
 
 RUN_USERID=$(whoami)
 DELIMITER_STRING=':::'
@@ -109,7 +110,8 @@ ESCAPE_SPECIAL_CHARACTERS_SED_PROG='
 '
 
 ################################################################################
-### If argument $1 <= VERBOSITY_LEVEL, display [VERBOSITY_LEVEL] <timestamp> and the rest of the arguments ($2...)
+### If argument $1 <= VERBOSITY_LEVEL, display [VERBOSITY_LEVEL] <timestamp> and the rest of the arguments ($*)
+### Args: $1: VERBOSITY, $*: Information to send to LOG_PATHNAME
 function displayMessage {
     if [ $1 -le $VERBOSITY_LEVEL ]; then
 	FUNC_VERBOSITY_LEVEL=$1
@@ -120,19 +122,171 @@ function displayMessage {
 
 
 ################################################################################
-# Args: $1: verbosity_level, $2: descriptive string to display, $3: pathname of file to display
+### Display a file: header, indented file contents, tail
+### Args: $1: verbosity_level, $2: descriptive string to display, $3: pathname of file to display
 function displayFile {
-    displayMessage $1 "  vvvvvvvvvvv $2 file contents below here vvvvvvvvvvvvv"
-    # sed 's/.*/      &/' $3 >> $LOG_PATHNAME
-    awk '{ printf("      (%d) [%s]\n", NR, $0); }' $3 >> $LOG_PATHNAME
-    displayMessage $1 "  ^^^^^^^^^^^ $2 file contents above here ^^^^^^^^^^^^"
+    if [ $1 -le $VERBOSITY_LEVEL ]; then
+	displayMessage $1 "   vvvvvvvvvvv $2 file contents below here vvvvvvvvvvvvv"
+	awk '{ printf("       (%d) [%s]\n", NR, $0); }' $3 >> $LOG_PATHNAME
+	displayMessage $1 "   ^^^^^^^^^^^ $2 file contents above here ^^^^^^^^^^^^"
+    fi
 }
 
 
 ################################################################################
+### Check a PRUNEFILES_ARGS_PATHNAME to ensure it exists, is readable regular file, not empty, has secure
+### permissions, and is owned by the user running this script. Returns 1 if an error is detected, 0 of all is well.
+### Args: $1: PRUNEFILES_ARGS_PATHNAME
+function checkArgsFile {
+    PRUNEFILES_ARGS_PATHNAME="$1"
+    # Ensure PRUNEFILES_ARGS_PATHNAME is a regular file
+    if [ \! -f "$PRUNEFILES_ARGS_PATHNAME" ]; then
+	displayMessage 0 "E: '$PRUNEFILES_ARGS_PATHNAME' is not a regular file. Skipping."
+	return 1
+    fi
+
+    # Log PRUNEFILES_ARGS_PATHNAME's details (e.g., owner, group, permissions, size)
+    displayMessage 0 "   === details: $(ls -l "$PRUNEFILES_ARGS_PATHNAME")"
+
+    # Ensure PRUNEFILES_ARGS_PATHNAME is a readable non-empty regular file
+    if [ \! -r "$PRUNEFILES_ARGS_PATHNAME" -o \! -s "$PRUNEFILES_ARGS_PATHNAME" ]; then
+	displayMessage 0 "E: '$PRUNEFILES_ARGS_PATHNAME' is not a readable file containing data. Skipping."
+	return 1
+    fi
+    displayMessage 0 "   === cksum: $(cksum "$PRUNEFILES_ARGS_PATHNAME") ==="
+
+    # Ensure PRUNEFILES_ARGS_PATHNAME is owned by the user running this script
+    PRUNEFILES_ARGS_PATHNAME_USERID=$(stat -c %U "$PRUNEFILES_ARGS_PATHNAME")
+    if [ "$RUN_USERID" != "$PRUNEFILES_ARGS_PATHNAME_USERID" ]; then
+	displayMessage 0 "E: '$PRUNEFILES_ARGS_PATHNAME' must be owned by user $RUN_USERID, not $PRUNEFILES_ARGS_PATHNAME_USERID. Skipping"
+	return 1
+    fi
+
+    # Ensure PRUNEFILES_ARGS_PATHNAME has user read and _not_ group or other write permissions
+    PRUNEFILES_ARGS_PATHNAME_PERMISSIONS=$(stat -c %A "$PRUNEFILES_ARGS_PATHNAME")
+    PRUNEFILES_ARGS_PATHNAME_USER_PERMISSIONS=${PRUNEFILES_ARGS_PATHNAME_PERMISSIONS:1:3}
+    PRUNEFILES_ARGS_PATHNAME_GROUP_PERMISSIONS=${PRUNEFILES_ARGS_PATHNAME_PERMISSIONS:4:3}
+    PRUNEFILES_ARGS_PATHNAME_OTHER_PERMISSIONS=${PRUNEFILES_ARGS_PATHNAME_PERMISSIONS:7:3}
+    if [[ ! $PRUNEFILES_ARGS_PATHNAME_USER_PERMISSIONS  =~ r ||
+	    $PRUNEFILES_ARGS_PATHNAME_GROUP_PERMISSIONS =~ w ||
+	    $PRUNEFILES_ARGS_PATHNAME_OTHER_PERMISSIONS =~ w ]]; then
+	displayMessage 0 "E: '$PRUNEFILES_ARGS_PATHNAME' must be readable by user ($RUN_USERID) and not writable by group or other ($PRUNEFILES_ARGS_PATHNAME_PERMISSIONS). Skipping"
+	return 1
+    fi
+
+    return 0
+}
+
+
+################################################################################
+### Process one PRUNEFILES_ARGS_PATHNAME file.
+### Args: $1: PRUNEFILES_ARGS_PATHNAME
+function processArgsFile {
+    PRUNEFILES_ARGS_PATHNAME="$1"
+
+    ### Parse PRUNEFILES_ARGS_PATHNAME searching for lines in the valid format (see above). "Sanitize" this data
+    ### by removing everything but: <DIRECTORY_LIST_PATTERN><DELIMITER_STRING><FIND_PROGRAM_ARGS>
+    ### Save this output to file SANITIZED_ARGS_PATHNAME
+    awk -F "$DELIMITER_STRING" "
+	/^\/.*${DELIMITER_STRING}.+/{
+	    gsub(\"[ \t]+\$\", \"\", \$1);				# trim trailing whitespace from $1 (the directory)
+	    gsub(\"^[ \t]+|[ \t]+\$\", \"\", \$2);			# trim leading and trailing whitespace from $2 (the find_command_args)
+	    printf(\"%s${DELIMITER_STRING}%s\n\", \$1, \$2);	# output <directory>DELIMITER_STRING<find_command_args>
+	}
+    " "$PRUNEFILES_ARGS_PATHNAME" > $SANITIZED_ARGS_PATHNAME
+
+    ### If the verbosity level is high enough, list the sanitized arguments file
+    LOCAL_VERBOSITY_LEVEL=5
+    if [ $VERBOSITY_LEVEL -ge $LOCAL_VERBOSITY_LEVEL ]; then
+	displayMessage $LOCAL_VERBOSITY_LEVEL '   ==================================================================='
+	displayFile    $LOCAL_VERBOSITY_LEVEL '   SANITISED_ARGS_PATHNAME' "$SANITIZED_ARGS_PATHNAME"
+	displayMessage $LOCAL_VERBOSITY_LEVEL '   ==================================================================='
+	displayMessage $LOCAL_VERBOSITY_LEVEL ''
+    fi
+
+    SANITIZED_LINE_COUNT=0
+    ### Read each "sanitized" line from SANITIZED_ARGS_PATHNAME, one line at a time (if any).
+    while read -r SANITIZED_PRUNEFILES_ARGS_LINE; do
+	SANITIZED_LINE_COUNT=$((SANITIZED_LINE_COUNT+1))
+	displayMessage 3 "   Sanitized input line #$SANITIZED_LINE_COUNT: [$SANITIZED_PRUNEFILES_ARGS_LINE]"
+
+	# Extract the DIRECTORY_LIST_PATTERN and FIND_PROGRAM_ARGS from the sanitized input line
+	RAW_DIRECTORY_LIST_PATTERN=$(echo "$SANITIZED_PRUNEFILES_ARGS_LINE" | awk -F "$DELIMITER_STRING" '{ print $1; }')
+	DIRECTORY_LIST_PATTERN=$(echo "$RAW_DIRECTORY_LIST_PATTERN" | sed "$ESCAPE_SPECIAL_CHARACTERS_SED_PROG")
+	FIND_PROGRAM_ARGS=$(echo "$SANITIZED_PRUNEFILES_ARGS_LINE" | awk -F "$DELIMITER_STRING" '{ print $2; }')
+
+	# Only displayed when using an extremely high VERBOSITY_LEVEL - for debugging!
+	displayMessage 6 "$(printf "%40s=[%s]" RAW_DIRECTORY_LIST_PATTERN "$RAW_DIRECTORY_LIST_PATTERN")"
+	displayMessage 6 "$(printf "%40s=[%s]"     DIRECTORY_LIST_PATTERN     "$DIRECTORY_LIST_PATTERN")"
+
+	# Build the FIND_DIRECTORIES_COMMAND to expand DIRECTORY_LIST_PATTERN into a list of directories.
+	case "$FIND_PROGRAM_BASENAME" in
+	    findfiles)	FIND_DIRECTORIES_COMMAND="$FIND_PROGRAM -dN -D 0 $DIRECTORY_LIST_PATTERN";;
+	    find)	FIND_DIRECTORIES_COMMAND="$FIND_PROGRAM $DIRECTORY_LIST_PATTERN -maxdepth 0 -type d";;
+	    *)		displayMessage 0 "E: Illegal find_program '$FIND_PROGRAM_BASENAME', aborting"; exit 1;;
+	esac
+	displayMessage 3 "   FIND_DIRECTORIES_COMMAND=[$FIND_DIRECTORIES_COMMAND]"
+
+	# Run FIND_DIRECTORIES_COMMAND and store the output (a list of directories) in DIRECTORYNAMES_PATHNAME.
+	eval "$FIND_DIRECTORIES_COMMAND" > $DIRECTORYNAMES_PATHNAME 2> $FIND_DIRECTORIES_STDERR_PATHNAME; FIND_PROGRAM_RETURN_VALUE=$?
+	if [ $FIND_PROGRAM_RETURN_VALUE -ne 0 ]; then
+	    displayMessage 0 "E: Return value of '$FIND_PROGRAM': $FIND_PROGRAM_RETURN_VALUE (while processing '$DIRECTORY_LIST_PATTERN')" >> $LOG_PATHNAME
+	    displayFile 0 'DIRECTORYNAMES_PATHNAME' "$DIRECTORYNAMES_PATHNAME"
+	    displayFile 0 'FIND_DIRECTORIES_STDERR_PATHNAME' "$FIND_DIRECTORIES_STDERR_PATHNAME"
+	fi
+
+	LOCAL_VERBOSITY_LEVEL=5
+	if [ $VERBOSITY_LEVEL -ge $LOCAL_VERBOSITY_LEVEL ]; then
+	    displayFile $LOCAL_VERBOSITY_LEVEL '   Expanded DIRECTORYNAMES_PATHNAME' "$DIRECTORYNAMES_PATHNAME"
+	fi
+
+	DIRECTORY_COUNTER=0					# FIND_DIRECTORIES_COMMAND succeeded
+	# Extract one directory at a time from DIRECTORYNAMES_PATHNAME and process it.
+	while read -r RAW_DIRECTORY_PATHNAME; do
+	    DIRECTORY_COUNTER=$((DIRECTORY_COUNTER+1))
+	    DIRECTORY_PATHNAME=$(echo "$RAW_DIRECTORY_PATHNAME" | sed "s:':'\\\'':g")
+
+	    if [ -r "$RAW_DIRECTORY_PATHNAME" -a -x "$RAW_DIRECTORY_PATHNAME" ]; then
+
+		# The directory is readable and searchable, so build FIND_FILES_COMMAND.
+		case "$FIND_PROGRAM_BASENAME" in
+		    findfiles)	FIND_FILES_COMMAND="$FIND_PROGRAM $FIND_PROGRAM_ARGS '$DIRECTORY_PATHNAME'";;
+		    find)		FIND_FILES_COMMAND="$FIND_PROGRAM '$DIRECTORY_PATHNAME' $FIND_PROGRAM_ARGS -maxdepth 1 -type f";;
+		    *)		displayMessage 0 "E: Illegal find_program '$FIND_PROGRAM_BASENAME', aborting"; exit 1;;
+		esac
+
+		displayMessage 2 "    ($DIRECTORY_COUNTER) [$FIND_FILES_COMMAND]"	>> $LOG_PATHNAME
+		# Run FIND_FILES_COMMAND and save the output to FILENAMES_PATHNAME.
+		eval "$FIND_FILES_COMMAND" 2> /dev/null | sort -u > $FILENAMES_PATHNAME
+
+		displayMessage 3 "    Number of files to delete from this directory: $(cat $FILENAMES_PATHNAME | wc -l)"
+		# Loop through any (all) files that FIND_FILES_COMMAND found.
+		while read -r FILE_PATHNAME; do
+		    if [ -f "$FILE_PATHNAME" ]; then
+			if [ $DRY_RUN_FLAG -eq 0 ]; then # if the file exists and this isn't a "dry run", remove it.
+			    displayMessage 1 "      f rm $FILE_PATHNAME"	>> $LOG_PATHNAME
+			    rm "$FILE_PATHNAME" 				>> $LOG_PATHNAME 2>&1
+			else
+			    # If this is a "dry run", don't actually delete it, just output what would be deleted.
+			    displayMessage 1 "      f rm $FILE_PATHNAME - dry run, file NOT removed" 	>> $LOG_PATHNAME 2>&1
+			fi
+		    else
+			displayMessage 0 "W: '$FILE_PATHNAME' is not a regular file"	>> $LOG_PATHNAME
+		    fi
+		done < $FILENAMES_PATHNAME
+	    else
+		displayMessage 0 "E: ($DIRECTORY_COUNTER) '$DIRECTORY_PATHNAME' is not a readable/searchable directory' ***" >> $LOG_PATHNAME
+	    fi
+	done < $DIRECTORYNAMES_PATHNAME
+	echo >> $LOG_PATHNAME
+	echo >> $LOG_PATHNAME
+    done < $SANITIZED_ARGS_PATHNAME
+}
+
+################################################################################
 function displayUsageMessage {
     echo "usage (version $PROG_VERSION):"
-    echo "$PROG [optional_arguments] prunefiles_args_pathname # where the options are:"
+    echo "$PROG [optional_arguments] prunefiles_args_pathname [...]	# where the options are:"
     echo "  -d delimiter_string         - Default: '$DELIMITER_STRING'"
     echo "  -f find_program             - Default: $FIND_PROGRAM"
     echo "  -h                          - Display this usage message"
@@ -142,11 +296,9 @@ function displayUsageMessage {
 }
 
 
-#########################################################################
 ################################################################################
 # Main program
 ################################################################################
-#########################################################################
 
 OPTIONS="d:f:hl:nv:"
 ### Parse command line argument
@@ -166,13 +318,6 @@ if [ $# -lt 1 ]; then
     displayUsageMessage
     exit 1
 fi
-PRUNEFILES_ARGS_PATHNAME="$1"
-
-### Ensure PRUNEFILES_ARGS_PATHNAME is a readable non-empty regular file
-if [ \! -f $PRUNEFILES_ARGS_PATHNAME -o \! -r $PRUNEFILES_ARGS_PATHNAME -o \! -s $PRUNEFILES_ARGS_PATHNAME ]; then
-    displayMessage 0 "'$PRUNEFILES_ARGS_PATHNAME' is not a readable file containing data!!! Aborting"
-    exit 1
-fi
 
 ### Created LOG_DIRECTORY if it doesn't exist. Yes, even if we're not using it!
 if [ ! -d ${LOG_DIRECTORY} ]; then
@@ -180,144 +325,33 @@ if [ ! -d ${LOG_DIRECTORY} ]; then
 fi
 
 ### Sanity check where logging info goes
-if [ -f "$LOG_PATHNAME" ]; then
-    displayMessage 0 "  '$LOG_PATHNAME' is a file, removing it"
-    rm -f "$LOG_PATHNAME"
-elif [ "$LOG_PATHNAME" == '/dev/tty' -a -c "$LOG_PATHNAME" ]; then
-    displayMessage 0 "  Sending output to '/dev/tty'"
+if [ "$LOG_PATHNAME" == '/dev/tty' -a -c "$LOG_PATHNAME" ]; then
+    displayMessage 0 "   Sending output to '/dev/tty'"
 elif [ -d "$LOG_PATHNAME" ]; then
-    displayMessage "'$LOG_PATHNAME' is a directory, aborting"
-    exit 1
-fi
-
-### Ensure PRUNEFILES_ARGS_PATHNAME is owned by the user running this script
-PRUNEFILES_ARGS_PATHNAME_USERID=$(stat -c %U "$PRUNEFILES_ARGS_PATHNAME")
-if [ "$RUN_USERID" != "$PRUNEFILES_ARGS_PATHNAME_USERID" ]; then
-    displayMessage 0 "E: $PRUNEFILES_ARGS_PATHNAME must be owned by user $RUN_USERID, not $PRUNEFILES_ARGS_PATHNAME_USERID"
-    exit 1
-fi
-
-### Ensure PRUNEFILES_ARGS_PATHNAME has user read and _not_ group or other write permissions
-PRUNEFILES_ARGS_PATHNAME_PERMISSIONS=$(stat -c %A "$PRUNEFILES_ARGS_PATHNAME")
-PRUNEFILES_ARGS_PATHNAME_USER_PERMISSIONS=${PRUNEFILES_ARGS_PATHNAME_PERMISSIONS:1:3}
-PRUNEFILES_ARGS_PATHNAME_GROUP_PERMISSIONS=${PRUNEFILES_ARGS_PATHNAME_PERMISSIONS:4:3}
-PRUNEFILES_ARGS_PATHNAME_OTHER_PERMISSIONS=${PRUNEFILES_ARGS_PATHNAME_PERMISSIONS:7:3}
-if [[ !	$PRUNEFILES_ARGS_PATHNAME_USER_PERMISSIONS  =~ r ||
-	$PRUNEFILES_ARGS_PATHNAME_GROUP_PERMISSIONS =~ w ||
-	$PRUNEFILES_ARGS_PATHNAME_OTHER_PERMISSIONS =~ w ]]; then
-    displayMessage 0 "E: '$PRUNEFILES_ARGS_PATHNAME' must be readable by user ($RUN_USERID) and not writable by group or other ($PRUNEFILES_ARGS_PATHNAME_PERMISSIONS)"
+    displayMessage 0 "E: '$LOG_PATHNAME' is a directory, aborting"
     exit 1
 fi
 
 ### Start processing
-displayMessage 0 "  ===================== $(date) ====================="
-displayMessage 0 "  === $(hostname): Starting $PROG $* ==="
+displayMessage 0 "===================== $(date) ====================="
+displayMessage 0 "=== hostname: $(hostname). Starting $PROG $@ ==="
+displayMessage 0 "=== running as user: $(whoami) ==="
 
-### Log PRUNEFILES_ARGS_PATHNAME's details (e.g., owner, group, permissions, size)
-displayMessage 0 "  === running as user: $(whoami) ==="
-displayMessage 0 "  === $(ls -l $PRUNEFILES_ARGS_PATHNAME) : cksum: $(cksum < $PRUNEFILES_ARGS_PATHNAME) ==="
-
-### Parse PRUNEFILES_ARGS_PATHNAME searching for lines /<absolute_pathname_pattern>DELIMITER_STRING<find_files_command_args>.
-### Note: this means all pathnames must be absolute! "Sanitize" this file by removing everything that is of no interest.
-### Save this output to file SANITIZED_ARGS_PATHNAME
-awk -F "$DELIMITER_STRING" "
-    /^\/.*${DELIMITER_STRING}.+/{
-	gsub(\"[ \t]+\$\", \"\", \$1);				# trim trailing whitespace from $1 (the directory)
-	gsub(\"^[ \t]+|[ \t]+\$\", \"\", \$2);			# trim leading and trailing whitespace from $2 (the find_command_args)
-	printf(\"%s${DELIMITER_STRING}%s\n\", \$1, \$2);	# output <directory>DELIMITER_STRING<find_command_args>
-    }
-" $PRUNEFILES_ARGS_PATHNAME > $SANITIZED_ARGS_PATHNAME
-
-### If the verbosity level is high enough, list the sanitized arguments file
-LOCAL_VERBOSITY_LEVEL=5
-if [ $VERBOSITY_LEVEL -ge $LOCAL_VERBOSITY_LEVEL ]; then
-    displayMessage $LOCAL_VERBOSITY_LEVEL '  ============================================================================================'
-    displayFile    $LOCAL_VERBOSITY_LEVEL 'SANITISED_ARGS_PATHNAME' "$SANITIZED_ARGS_PATHNAME"
-    displayMessage $LOCAL_VERBOSITY_LEVEL '  ============================================================================================'
-    displayMessage $LOCAL_VERBOSITY_LEVEL ''
-fi
 
 FIND_PROGRAM_BASENAME=$(basename $FIND_PROGRAM)
-SANITIZED_LINE_COUNT=0
-### Read each line from sanitized arguments file SANITIZED_ARGS_PATHNAME, one line at a time.
-while read -r SANITIZED_PRUNEFILES_ARGS_LINE; do
-    SANITIZED_LINE_COUNT=$((SANITIZED_LINE_COUNT+1))
-    displayMessage 4 "  Sanitized input line #$SANITIZED_LINE_COUNT: [$SANITIZED_PRUNEFILES_ARGS_LINE]"
-
-    # Extract the DIRECTORY_LIST_PATTERN and FIND_PROGRAM_ARGS from the sanitized input line
-    RAW_DIRECTORY_LIST_PATTERN=$(echo "$SANITIZED_PRUNEFILES_ARGS_LINE" | awk -F "$DELIMITER_STRING" '{ print $1; }')
-    DIRECTORY_LIST_PATTERN=$(echo "$RAW_DIRECTORY_LIST_PATTERN" | sed "$ESCAPE_SPECIAL_CHARACTERS_SED_PROG")
-    FIND_PROGRAM_ARGS=$(echo "$SANITIZED_PRUNEFILES_ARGS_LINE" | awk -F "$DELIMITER_STRING" '{ print $2; }')
-
-    # Only at an extremely high VERBOSITY_LEVEL - for debugging!!!
-    displayMessage 6 "$(printf "%40s=[%s]" RAW_DIRECTORY_LIST_PATTERN "$RAW_DIRECTORY_LIST_PATTERN")"
-    displayMessage 6 "$(printf "%40s=[%s]"     DIRECTORY_LIST_PATTERN     "$DIRECTORY_LIST_PATTERN")"
-
-    # Build the FIND_DIRECTORIES_COMMAND to expand DIRECTORY_LIST_PATTERN into a list of directories.
-    case "$FIND_PROGRAM_BASENAME" in
-	findfiles)	FIND_DIRECTORIES_COMMAND="$FIND_PROGRAM -dN -D 0 $DIRECTORY_LIST_PATTERN";;
-	find)		FIND_DIRECTORIES_COMMAND="$FIND_PROGRAM $DIRECTORY_LIST_PATTERN -maxdepth 0 -type d";;
-	*)		displayMessage 0 "E: Illegal find_program '$FIND_PROGRAM_BASENAME', aborting"; exit 1;;
-    esac
-    displayMessage 3 "  FIND_DIRECTORIES_COMMAND=[$FIND_DIRECTORIES_COMMAND]"
-
-    # Run FIND_DIRECTORIES_COMMAND and store the output (directory list) in in DIRECTORYNAMES_PATHNAME.
-    eval "$FIND_DIRECTORIES_COMMAND" > $DIRECTORYNAMES_PATHNAME 2> $FIND_DIRECTORIES_STDERR_PATHNAME
-    FIND_PROGRAM_RETURN_VALUE=$?
-    if [ $FIND_PROGRAM_RETURN_VALUE -ne 0 ]; then
-	displayMessage 0 "E: Return value of '$FIND_PROGRAM': $FIND_PROGRAM_RETURN_VALUE (while processing '$DIRECTORY_LIST_PATTERN')" >> $LOG_PATHNAME
-	displayFile 0 'DIRECTORYNAMES_PATHNAME' "$DIRECTORYNAMES_PATHNAME"
-	displayFile 0 'FIND_DIRECTORIES_STDERR_PATHNAME' "$FIND_DIRECTORIES_STDERR_PATHNAME"
-    fi
-
-    LOCAL_VERBOSITY_LEVEL=5
-    if [ $VERBOSITY_LEVEL -ge $LOCAL_VERBOSITY_LEVEL ]; then
-	displayFile $LOCAL_VERBOSITY_LEVEL 'Expanded DIRECTORYNAMES_PATHNAME' "$DIRECTORYNAMES_PATHNAME"
-    fi
-
-    DIRECTORY_COUNTER=0					# FIND_DIRECTORIES_COMMAND succeeded
-    # Extract one directory at a time from DIRECTORYNAMES_PATHNAME and process it.
-    while read -r RAW_DIRECTORY_PATHNAME; do
-	DIRECTORY_COUNTER=$((DIRECTORY_COUNTER+1))
-	DIRECTORY_PATHNAME=$(echo "$RAW_DIRECTORY_PATHNAME" | sed "s:':'\\\'':g")
-
-	if [ -r "$RAW_DIRECTORY_PATHNAME" -a -x "$RAW_DIRECTORY_PATHNAME" ]; then
-
-	    # The directory is readable and searchable, so build FIND_FILES_COMMAND.
-	    case "$FIND_PROGRAM_BASENAME" in
-		findfiles)	FIND_FILES_COMMAND="$FIND_PROGRAM $FIND_PROGRAM_ARGS '$DIRECTORY_PATHNAME'";;
-		find)		FIND_FILES_COMMAND="$FIND_PROGRAM '$DIRECTORY_PATHNAME' $FIND_PROGRAM_ARGS -maxdepth 1 -type f";;
-		*)		displayMessage 0 "E: Illegal find_program '$FIND_PROGRAM_BASENAME', aborting"; exit 1;;
-	    esac
-
-	    displayMessage 2 "    ($DIRECTORY_COUNTER) [$FIND_FILES_COMMAND]"	>> $LOG_PATHNAME
-	    # Run FIND_FILES_COMMAND and save the output to FILENAMES_PATHNAME.
-	    eval "$FIND_FILES_COMMAND" 2> /dev/null | sort -u > $FILENAMES_PATHNAME
-
-	    displayMessage 3 "    Number of files to delete from this directory: $(cat $FILENAMES_PATHNAME | wc -l)"
-	    # Loop through any (all) files that FIND_FILES_COMMAND found.
-	    while read -r FILE_PATHNAME; do
-		if [ -f "$FILE_PATHNAME" ]; then
-		    if [ $DRY_RUN_FLAG -eq 0 ]; then # if the file exists and this isn't a "dry run", remove it.
-			displayMessage 1 "      f rm $FILE_PATHNAME"	>> $LOG_PATHNAME
-			rm "$FILE_PATHNAME" 				>> $LOG_PATHNAME 2>&1
-		    else
-			# If this is a "dry run", don't actually delete it, just output what would be deleted.
-			displayMessage 1 "      f rm $FILE_PATHNAME - dry run, file NOT removed" 	>> $LOG_PATHNAME 2>&1
-		    fi
-		else
-		    displayMessage 0 "W: '$FILE_PATHNAME' not a file"	>> $LOG_PATHNAME
-		fi
-	    done < $FILENAMES_PATHNAME
-	else
-	    displayMessage 0 "E:  ($DIRECTORY_COUNTER) '$DIRECTORY_PATHNAME' is not a readable/searchable directory' ***" >> $LOG_PATHNAME
-	fi
-    done < $DIRECTORYNAMES_PATHNAME
+### Loop the the (one or more) prunefiles args files and process each one, in CL order.
+for PRUNEFILES_ARGS_PATHNAME in "$@"; do
     echo >> $LOG_PATHNAME
-    echo >> $LOG_PATHNAME
-done < $SANITIZED_ARGS_PATHNAME
+    displayMessage 0 ' ***************************************************************************************';
+    displayMessage 0 " ****************** Processing args file '$PRUNEFILES_ARGS_PATHNAME' *******************";
+    displayMessage 0 ' ***************************************************************************************';
+    checkArgsFile   "$PRUNEFILES_ARGS_PATHNAME"; CHECK_ARGS_RETURN_VALUE=$?
+    if [ $CHECK_ARGS_RETURN_VALUE -eq 0 ]; then
+	processArgsFile "$PRUNEFILES_ARGS_PATHNAME"
+    fi
+done
 
 rm -f $DIRECTORYNAMES_PATHNAME $FILENAMES_PATHNAME $SANITIZED_ARGS_PATHNAME $FIND_DIRECTORIES_STDERR_PATHNAME
-displayMessage 0 "  ===================== $(date) =====================" >> $LOG_PATHNAME
+displayMessage 0 "   ===================== $(date) =====================" >> $LOG_PATHNAME
 
 exit 0
